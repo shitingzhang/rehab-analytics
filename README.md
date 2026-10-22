@@ -22,10 +22,8 @@
 - A **missing-data problem** removed 49.8% of facilities from the as-planned analysis. It was traced to CMS small-cell
   suppression, corrected, and **both versions are reported side by side**.
 
-<p align="center">
-  <img src="reports/figures/sensitivity_dose.png" alt="Dose coefficient across 13 sensitivity analyses for the three outcomes" width="100%">
-  <br><em>Therapy-dose coefficient (+10 min/day, 95% CI) across the pre-specified sensitivity analyses.</em>
-</p>
+![Therapy-dose coefficient across the sensitivity analyses for the three outcomes](reports/figures/sensitivity_dose.png)
+*Therapy-dose coefficient (+10 min/day, 95% CI) across the pre-specified sensitivity analyses.*
 
 > **Associations, not causal effects.** The data are facility-level, observational and limited to Original Medicare. See
 > [Limitations](#limitations).
@@ -235,5 +233,5 @@ published**, and no facility should be described as inefficient on this basis.
 
 ## Author
 
-**Shiting Zhang** — rehabilitation background, working in health data science.
+**Shiting Zhang** — rehabilitation-therapy background, working in health data science.
 GitHub: [@shitingzhang](https://github.com/shitingzhang)
