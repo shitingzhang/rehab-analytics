@@ -1,7 +1,7 @@
 """
 01_data_quality_cms.py
 Data-quality audit, cleaning and feature engineering for REAL public CMS inpatient
-rehabilitation (IRF) data. Replaces the synthetic-encounter logic of 02_data_quality.py.
+rehabilitation (IRF) data.
 
 Grain changes from  encounter (patient stay)  ->  facility (one row per CCN).
 
