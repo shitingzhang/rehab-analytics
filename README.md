@@ -5,23 +5,36 @@
 ![Data](https://img.shields.io/badge/data-CMS%20public%20files-2E7D32)
 ![Analysis](https://img.shields.io/badge/analysis-pre--specified%20plan-6A1B9A)
 
-> **Are facility-level therapy intensity and treatment-mode composition associated with quality and payment outcomes
-> among U.S. inpatient rehabilitation facilities (IRFs)?** A study of **1,165 IRFs** using public CMS data, run under a
-> pre-specified analysis plan with every later change logged.
+> **In U.S. inpatient rehabilitation facilities (IRFs), giving more therapy minutes is not linked to more patients
+> going home or fewer readmissions, but it is linked to lower Medicare payment per stay; how therapy is delivered, not
+> just how much, shows signals worth testing.**
+>
+> A study of **1,165 IRFs** using public CMS data, run under a pre-specified analysis plan with every later change
+> logged. The questions are listed under [Research questions](#research-questions).
+
+**New to the topic?** Start with the one-page [plain-language summary](docs/summary.md).
 
 ## Key findings
 
-- **No association was found** between daily therapy dose and **discharge to community** (−0.07 percentage points per
-  +10 min/day, 95% CI −0.23 to 0.10) or **readmission** (0.02 points, 95% CI −0.004 to 0.05).
-- Each extra **10 minutes of therapy per day** went with about **$200–280 lower** standardized Medicare payment per
-  stay: $280 in the primary model (95% CI $150–$400), and about $200 without the most influential facilities.
-- All three results are **consistent in direction under the missing-data treatments tested**: as planned, corrected,
+1. **More is not better for outcomes.** No association was found between daily therapy dose and **discharge to
+   community** (−0.07 percentage points per +10 min/day, 95% CI −0.23 to 0.10) or **readmission** (0.02 points, 95% CI
+   −0.004 to 0.05). The same held for **functional recovery** in a supplementary exploratory analysis added later
+   (−0.05 points, 95% CI −0.52 to 0.42).
+2. **More went with lower payment.** Each extra **10 minutes of therapy per day** went with about **$200–280 lower**
+   standardized Medicare payment per stay: $280 in the primary model (95% CI $150–$400), and about $200 without the most
+   influential facilities. The data cannot show why.
+3. **How therapy is delivered shows signals (exploratory).** A higher share of group/concurrent therapy went with
+   *higher* discharge-to-community **and** *higher* readmission rates. Both survive false-discovery-rate correction
+   (q < 0.001), but they point in opposite directions for quality, were not pre-specified and are not independently
+   replicated.
+
+How far these hold:
+- Findings 1 and 2 are **consistent in direction under the missing-data treatments tested**: as planned, corrected,
   alternative fill values, and without the affected variables.
-- **Exploratory:** a higher share of group/concurrent therapy went with *higher* discharge-to-community **and** *higher*
-  readmission rates. Both associations survive false-discovery-rate correction (q < 0.001), but they are exploratory
-  and not independently replicated.
 - A **missing-data problem** removed 49.8% of facilities from the as-planned analysis. It was traced to CMS small-cell
   suppression, corrected, and **both versions are reported side by side**.
+- A **clinical check of the data** passed: facilities treating more patients with stroke or brain injury use more
+  speech-language therapy, as expected (supplementary H1).
 
 ![Therapy-dose coefficient across the sensitivity analyses for the three outcomes](reports/figures/sensitivity_dose.png)
 *Therapy-dose coefficient (+10 min/day, 95% CI) across the sensitivity analyses: S1–S9 pre-specified, S10–S13 added
@@ -82,17 +95,20 @@ python src/05_screening.py --as-planned
 python src/05_screening.py
 python src/06_compare_versions.py       # side-by-side comparison tables
 python src/07_model_diagnostics.py      # model diagnostics (needs statsmodels)
+python src/08_figures.py                # sample-flow and missingness figures
+python src/09_function_outcomes.py      # supplementary exploratory analysis RQ-A2
+python src/11_slp_neuro_check.py        # supplementary positive-control check H1 (SLP vs brain conditions)
 python tests/test_pipeline.py           # automated checks of the data and of the key results
 ```
 
 Run from the project root. The cleaned facility file, the database and the facility-level screen files are rebuilt by
 these steps and are not committed. The only random step, the bootstrap in `05`, uses a fixed seed (2026).
 
-**Automated checks** ([`tests/test_pipeline.py`](tests/test_pipeline.py), 9 checks):
+**Automated checks** ([`tests/test_pipeline.py`](tests/test_pipeline.py), 11 checks):
 - **Data:** raw IDs keep their leading zeros; the facility key is unique; percentages, shares and flags are in range;
   suppression counts match the raw markers; facility links are one-to-one and in the same state.
-- **Results:** the published as-planned and corrected estimates and the exploratory classification are reproduced
-  exactly.
+- **Results:** the published as-planned and corrected estimates, the exploratory classification, and the RQ-A2 and H1
+  estimates are reproduced exactly.
 
 The four CMS source files are included in `data/raw/`; see [Data](#data) for where they come from and how to refresh
 them.
@@ -112,18 +128,22 @@ rehab-analytics/
 │       ├── analysis_as_planned/ as-planned results (v1.2), kept unchanged
 │       ├── comparison/          side-by-side tables of all versions
 │       ├── diagnostics/         model diagnostics (VIF, residuals, influence)
+│       ├── function_outcomes/   supplementary analysis RQ-A2
 │       ├── linkage_audit/       facility-linkage checks
 │       ├── screening*/          screen summaries (aggregate only)
+│       ├── slp_check/           supplementary positive-control check H1
 │       └── sql_outputs/         descriptive query results
 ├── docs/
 │   ├── analysis_plan.md         pre-specified plan + deviation log
 │   ├── data_dictionary.md       ERD and variable definitions
 │   ├── model_diagnostics.md     estimator check, VIF, residuals, influence
+│   ├── summary.md               one-page plain-language summary
 │   └── work_log.md              step-by-step record of runs and decisions
 ├── reports/figures/             figures (as_planned/ for v1.2)
 ├── sql/                         schema and analytical queries
 └── src/
-    ├── 01 … 07_*.py             pipeline, in run order
+    ├── 01 … 09_*.py             pipeline, in run order
+    ├── 11_slp_neuro_check.py    supplementary positive-control check H1
     ├── irf_common.py            shared regression engine and variable construction
     └── check_*.py               diagnostics incl. the linkage audit (never look at outcomes)
 ```
@@ -184,6 +204,10 @@ compares state, city and ZIP code between the two files for all 1,077 linked fac
 In the as-planned analysis (v1.2), only **539 of 1,073** facilities with a discharge-to-community rate were usable:
 **534 (49.8%) were dropped** because rural % or dual-eligible % was missing. The dropped facilities were smaller and more
 often hospital-based units.
+
+![Sample flow from the CMS file to the as-planned and corrected analysis samples](reports/figures/sample_flow.png)
+
+![Share of facilities with a suppressed value, by size, setting and ownership](reports/figures/missingness_pattern.png)
 
 The missing values are coded `*` in the raw file, the CMS marker for suppressed small counts.
 [`check_suppression.py`](src/check_suppression.py) showed the following:
@@ -268,6 +292,68 @@ combined. **It is not validated for operational or regulatory decisions.**
 - **Biased by size:** in the corrected version, the flag rate is 2.2% in the lowest volume tertile and 0% in the highest.
 - **No facility-level list is published**, and no facility should be described as inefficient on this basis.
 
+### Supplementary — Therapy dose and functional recovery (RQ-A2, exploratory, added later)
+
+**This analysis was added after the results above had been seen** ([deviation log](docs/analysis_plan.md#12-deviation-log)).
+It is exploratory and cannot be read as confirmatory evidence. It was briefly removed from this report because its result
+did not support the hypothesis, and then restored, because an analysis should not be dropped for that reason.
+
+- **Why:** therapy aims at functional recovery, while going home also depends on home support and finances.
+- **Outcomes (CY2025):** the % of patients who meet or exceed the discharge function score CMS expects for their
+  condition, for overall function, self-care and mobility.
+- **Model:** same as the primary model, with Holm adjustment across the three outcomes.
+- **Hypothesis, stated before fitting:** a higher dose goes with a higher %.
+
+| Outcome (n = 1,061) | Dose coefficient, +10 min/day [95% CI] | Holm p |
+|---|---|---|
+| Discharge function score | −0.05 [−0.52, 0.42] | 1.0 |
+| Discharge self-care | −0.14 [−0.57, 0.28] | 1.0 |
+| Discharge mobility | −0.08 [−0.55, 0.39] | 1.0 |
+
+**No association was found, and the hypothesis was not supported.**
+- The outcomes have an SD of about 19–21 points, so the intervals exclude effects larger than about half a point per
+  10 minutes.
+- The result is the same in direction under the as-planned sample, case weighting and the model without rural and
+  dual %. Details: [`function_summary.txt`](data/processed/function_outcomes/function_summary.txt).
+
+In the same models, two coefficients are large. Both are exploratory and not adjusted for multiple comparisons:
+- **Group/concurrent share:** +4.4 points per +10 points of share.
+- **For-profit ownership:** +7.7 points.
+
+Function scores come from assessments recorded by the facilities themselves, so differences in assessment or
+documentation practice cannot be ruled out. The function data (CY2025) and the therapy data (FY2024) do not overlap in
+time.
+
+### Supplementary — Do the therapy-mix data match clinical need? (H1, positive control, added later)
+
+**This check was added after all the results above had been seen** ([deviation log](docs/analysis_plan.md#12-deviation-log)).
+Its method and pass rule were written down before it was run.
+
+- **Why:** RQ-B relies on therapy-mix variables computed from CMS minutes. If they reflect real clinical practice,
+  facilities that treat more patients with brain conditions should use more **speech-language pathology (SLP)**, because
+  aphasia, dysphagia and cognitive-communication problems are common after stroke and brain injury.
+- **Exposure:** share of patients with stroke, traumatic brain injury or non-traumatic brain disease (+10 points).
+  "Other nervous system disorders" was left out in advance as too mixed in SLP need.
+- **Outcome:** SLP share of therapy minutes (percentage points). Covariates: hospital-based unit, ownership,
+  log(Medicare stays), HCC risk score and mean age; state fixed effects; state-clustered SEs.
+- **Pass rule, stated before fitting:** the coefficient is positive and its 95% CI excludes 0.
+
+| Analysis (n = 1,071) | SLP share, points per +10 points of brain-condition share [95% CI] |
+|---|---|
+| Primary (suppressed counts filled with 5) | **1.71 [0.99, 2.43]** |
+| Suppressed counts filled with 1 | 1.50 [0.84, 2.16] |
+| Suppressed counts filled with 10 | 1.81 [1.07, 2.54] |
+| Dual % and rural % added (n = 1,065) | 1.67 [0.92, 2.42] |
+
+**The check passed.** The average SLP share is 10.6%, so a facility with 10 more points of brain-condition patients
+uses about 1.7 points more SLP time: a modest but consistent difference. This supports, but does not prove, that the
+therapy-mix variables carry real clinical information. Details:
+[`slp_check_summary.txt`](data/processed/slp_check/slp_check_summary.txt).
+
+A second idea, that co-treatment would be more common where more patients have spinal-cord or brain injuries, was
+considered and not pursued: the primary models already adjust for impairment mix, and co-treatment use may depend
+mostly on facility practice.
+
 ## Limitations
 
 - Facility-level, observational, cross-sectional data. Associations only, and they do not apply to individual patients.
@@ -302,6 +388,7 @@ combined. **It is not validated for operational or regulatory decisions.**
 
 | File | What it shows |
 |---|---|
+| [`docs/summary.md`](docs/summary.md) | One-page plain-language summary for non-specialist readers |
 | [`docs/analysis_plan.md`](docs/analysis_plan.md) | Pre-specified questions, models and sensitivity analyses, plus the deviation log |
 | [`docs/work_log.md`](docs/work_log.md) | Every run, with its result and the decision taken |
 | [`docs/model_diagnostics.md`](docs/model_diagnostics.md) | Estimator cross-check, collinearity, residuals, influential facilities |
@@ -310,6 +397,31 @@ combined. **It is not validated for operational or regulatory decisions.**
 | [`data/processed/comparison/`](data/processed/comparison/) | Side-by-side tables of all versions |
 | [`data/processed/linkage_audit/`](data/processed/linkage_audit/) | Facility-linkage audit: identifier agreement and the low-confidence links |
 | [`data/processed/audit_log.csv`](data/processed/audit_log.csv) | Every data-quality rule and the number of records it affected |
+
+### AI assistance
+
+The topic, research questions, overall direction and clinical reasoning of this project are my own. An AI assistant
+(Claude, Anthropic) played a supporting role only: it helped with coding, debugging, statistical checks, drafting
+documentation and pushing the repository to GitHub. The final decisions on the topic, the research questions and the
+analysis were mine; the assistant's suggestions were adopted only after my review and approval, and every change to the
+pre-specified plan is recorded in the deviation log of [`docs/analysis_plan.md`](docs/analysis_plan.md). All numbers
+reported here are produced by the code in this repository, and the key results are checked automatically on every run
+([`tests/test_pipeline.py`](tests/test_pipeline.py)).
+
+Examples of my own work and decisions:
+- **Data cleaning and facility-ID mapping.** I did most of the data cleaning and wrote the code that maps facility
+  IDs between the CMS files before I started working with the AI assistant, which later helped refine it.
+- **Co-treatment as its own variable.** From clinical practice, two therapists treating one patient together differs
+  from group or concurrent therapy, so I kept the two apart before any model was run.
+- **No tuning for better-looking results.** I set the rule that assumptions, models and thresholds are not changed to
+  improve the results, and that every change is logged before it is run.
+- **Reporting a null result.** I restored the function-outcome analysis (RQ-A2) to the report after it had been removed,
+  because an analysis should not be dropped when it does not support the hypothesis.
+- **A clinical check of the data.** I chose to test whether facilities with more stroke and brain-injury patients use
+  more speech-language therapy (H1), confirmed which patient groups to include, and decided not to pursue a second,
+  weaker hypothesis on co-treatment.
+- **The core message.** I chose how the findings are summarised, keeping the exploratory results labelled as signals
+  rather than conclusions.
 
 ## Author
 
