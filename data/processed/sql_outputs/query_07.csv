@@ -1,0 +1,20 @@
+rule_id,source_table,records_affected,action_taken
+DQ-00,pac,1218,Informational
+DQ-01,pac,53,Moved out of facility table (kept for benchmarking)
+DQ-04,pac,15294,Set to NaN; never imputed as 0
+DQ-04b,pac,168,Flagged (dual_suppressed); filled with 5 beneficiaries in the analysis (plan v1.3)
+DQ-04b,pac,499,Flagged (rural_suppressed); filled with 5 beneficiaries in the analysis (plan v1.3)
+DQ-09a,crosswalk,810,Informational
+DQ-09b,crosswalk,686,Mapped
+DQ-09c,crosswalk,6,Mapped
+DQ-09e,crosswalk,118,Left unmapped
+DQ-10,qrp,79430,Informational
+DQ-12,qrp,10663,Kept; footnote preserved in irf_qrp_long_clean.csv (score NOT nulled)
+DQ-14,qrp,777,Kept; check footnote meaning in IRF_Data_Dictionary.pdf
+DQ-15,qrp,14175,Set to NaN (includes comparative-performance text rows)
+DQ-21,conditions,2486,Filled with 5 (midpoint of 1-10) for shares; per-facility count kept as dx_n_suppressed_cells
+DQ-22,conditions,335,Kept; used in the sensitivity analysis (restrict to <=1 suppressed)
+DQ-30,join,88,Kept (left join); ownership/region = NaN
+DQ-31,join,88,Kept; outcome columns = NaN
+DQ-32,join,145,Not in analytical cohort
+DQ-40,cohort,92,Retained; excluded from outcome comparisons

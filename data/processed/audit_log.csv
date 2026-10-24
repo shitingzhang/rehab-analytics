@@ -1,0 +1,32 @@
+rule_id,table,check_description,records_affected,action_taken
+DQ-00,pac,Rows loaded (all summary levels),1218,Informational
+DQ-01,pac,National/State summary rows separated from provider rows,53,Moved out of facility table (kept for benchmarking)
+DQ-02,pac,Provider ID is not a valid 6-character CCN,0,Excluded
+DQ-03,pac,"Duplicate (year, CCN) rows",0,Deduplicated (kept first)
+DQ-04b,pac,"bene_dual_pct suppressed ('*', true count 1-10)",168,Flagged (dual_suppressed); filled with 5 beneficiaries in the analysis (plan v1.3)
+DQ-04b,pac,"bene_rrl_pct suppressed ('*', true count 1-10)",499,Flagged (rural_suppressed); filled with 5 beneficiaries in the analysis (plan v1.3)
+DQ-04,pac,"Suppressed cells ('*', '+') converted to missing, across all numeric columns",15294,Set to NaN; never imputed as 0
+DQ-05,pac,Any percentage column outside 0-100,0,Flagged (dq_flag_pct_range); kept
+DQ-06,pac,Therapy-minute components do not sum to total (PT/OT/SLP),0,Flagged (dq_flag_minutes); kept
+DQ-07,pac,"Non-positive stays, or covered days < stays (implied LOS < 1)",0,Excluded from LOS/efficiency metrics (set to NaN)
+DQ-08,pac,Allowed amount < Medicare payment (should not occur),0,Flagged (dq_flag_payment); kept
+DQ-09a,crosswalk,Unit-style CCNs (letter in position 3) in Provider Data files,810,Informational
+DQ-09b,crosswalk,...mapped to exactly one PAC provider ID,686,Mapped
+DQ-09c,crosswalk,"...ambiguous, resolved by the learned letter->digit rule",6,Mapped
+DQ-09d,crosswalk,"...ambiguous, could not be resolved",0,Left unmapped
+DQ-09e,crosswalk,"...no PAC counterpart (e.g., closed/renumbered, too few Medicare FFS stays)",118,Left unmapped
+DQ-09f,crosswalk,...would collide with an already-mapped PAC ID,0,Left unmapped
+DQ-10,qrp,Long-format rows loaded (provider x measure),79430,Informational
+DQ-11,qrp,"Duplicate (CCN, measure code) rows",0,Deduplicated (kept first)
+DQ-12,qrp,Rows carrying a CMS footnote,10663,Kept; footnote preserved in irf_qrp_long_clean.csv (score NOT nulled)
+DQ-14,qrp,Numeric scores that also carry a footnote,777,Kept; check footnote meaning in IRF_Data_Dictionary.pdf
+DQ-15,qrp,Scores that are non-numeric or suppressed,14175,Set to NaN (includes comparative-performance text rows)
+DQ-13,qrp,Rate/RSRR outside 0-100,0,Set to NaN
+DQ-20,general,Duplicate CCN rows (after unit-ID mapping),0,Deduplicated (kept first)
+DQ-21,conditions,Condition counts suppressed ('less than 11'),2486,Filled with 5 (midpoint of 1-10) for shares; per-facility count kept as dx_n_suppressed_cells
+DQ-22,conditions,Facilities with 3 or more suppressed impairment groups,335,Kept; used in the sensitivity analysis (restrict to <=1 suppressed)
+DQ-23,conditions,"Duplicate (CCN, condition) rows",0,Deduplicated (kept first)
+DQ-30,join,PAC providers with no match in General Information,88,Kept (left join); ownership/region = NaN
+DQ-31,join,"PAC providers with no QRP measures (e.g., not required / too small)",88,Kept; outcome columns = NaN
+DQ-32,join,"QRP facilities absent from PAC file (non-FFS-Medicare volume, new, or suppressed)",145,Not in analytical cohort
+DQ-40,cohort,Facilities flagged 'Incomplete Data' (missing DTC or ALOS),92,Retained; excluded from outcome comparisons
