@@ -1,0 +1,4 @@
+stroke_tertile,facilities,mean_stroke_pct,mean_age,mean_risk_score,mean_alos_days,mean_dtc_rs_rate,mean_readmit_rsrr
+1,359,15.1,78.3,2.44,12.0,67.6,9.81
+2,359,22.3,77.4,2.42,12.3,67.6,9.43
+3,359,34.1,76.3,2.31,13.1,67.2,9.13

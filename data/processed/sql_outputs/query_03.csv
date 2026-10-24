@@ -1,0 +1,5 @@
+therapy_quartile,facilities,avg_therapy_min_per_day,avg_group_therapy_share,avg_risk_score,avg_dtc_rs_rate,avg_readmit_rsrr,avg_pay_per_stay
+1,290,75.2,0.04,2.36,67.9,9.2,29442.0
+2,290,107.4,0.064,2.45,67.5,9.32,26204.0
+3,290,118.7,0.089,2.45,67.2,9.58,24000.0
+4,289,131.0,0.089,2.38,67.2,9.73,23029.0

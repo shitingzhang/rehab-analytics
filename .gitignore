@@ -1,0 +1,13 @@
+﻿__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+CLAUDE.md
+
+# Facility-level files that carry a screen / outlier / review flag (plan v1.3: publish aggregates only).
+# Regenerate locally with 02 -> 03 -> 05 -> 06.
+data/processed/clean_facility_cohort.csv
+data/processed/irf_analytics.db
+data/processed/screening*/priority_review_list.csv
+data/processed/screening*/screen_all_facilities.csv
+data/processed/analysis*/funnel_flags.csv

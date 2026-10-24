@@ -1,0 +1,4 @@
+review_flag,facilities,mean_alos_days,mean_alos_vs_peer_median,mean_dtc_rs_rate,mean_therapy_min_per_day,mean_risk_score
+Priority for Review,25,16.3,1.33,59.8,84.1,2.34
+Standard,1048,12.3,1.0,67.7,108.6,2.39
+Incomplete Data,92,12.6,1.11,,108.7,2.6

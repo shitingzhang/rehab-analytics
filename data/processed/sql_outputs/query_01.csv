@@ -1,0 +1,10 @@
+ownership_type,setting,facilities,mean_alos_days,mean_therapy_min_per_day,mean_pay_per_stay,mean_risk_score,mean_dtc_rs_rate,volume_weighted_dtc_rate,mean_readmit_rsrr
+For profit,Free-standing / other,324,12.2,112.4,23578.0,2.49,68.5,69.2,9.93
+For profit,Hospital-based unit,145,12.4,100.7,26283.0,2.42,67.2,67.7,9.47
+Government,Free-standing / other,5,12.7,124.9,24940.0,2.34,69.5,70.7,9.09
+Government,Hospital-based unit,86,12.4,103.2,28614.0,2.27,66.5,66.8,9.25
+Non-profit,Free-standing / other,52,13.0,104.2,26432.0,2.47,65.7,65.8,9.18
+Non-profit,Hospital-based unit,459,12.5,108.3,26565.0,2.32,67.2,67.1,9.19
+Physician,Free-standing / other,4,12.4,128.7,23802.0,2.31,64.7,71.0,9.62
+Physician,Hospital-based unit,2,13.2,117.2,27132.0,3.41,69.1,68.9,9.6
+Unknown,Unknown,88,12.6,108.1,24665.0,2.63,,,
