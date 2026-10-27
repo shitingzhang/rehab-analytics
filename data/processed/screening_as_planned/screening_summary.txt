@@ -1,0 +1,42 @@
+Version: v1.2 AS PLANNED (suppressed dual / rural % left missing)
+Facilities screened: 541 of 1,165 (complete case-mix, ALOS and DTC). Case-mix variables in the expected-value models: ['risk', 'age', 'dual10', 'rural10', 'log_stays', 'imp10_brain_disease_or_condition_non_traumatic', 'imp10_brain_injury_traumatic', 'imp10_hip_or_femur_fracture', 'imp10_hip_or_knee_replacement_amputation_or_other_bone_or_joint_condition', 'imp10_nervous_system_disorder_excluding_stroke', 'imp10_spinal_cord_any', 'imp10_stroke']
+    Sample flow (i_019_02_dtc_rs_rate): 1,073 facilities have the outcome
+      Rural % (+10 pts): missing in 459; 614 remain after requiring it (-459)
+      Dual-eligible % (+10 pts): missing in 144; 541 remain after requiring it (-73)
+      complete cases: 541
+R-squared of the expected-value models: ALOS 0.29, DTC 0.18
+Primary rule: O/E ALOS >= 1.20 and DTC residual <= -2.5 points (the 25th percentile) -> 4 facilities flagged (0.7%)
+Bootstrap (500 refits): 2 of the 4 flagged facilities are flagged in at least 80% of refits (robust); 12 unflagged facilities are flagged in some refits.
+
+=== Sensitivity of the screen to its thresholds ===
+ alos_ratio_min  dtc_percentile  flagged  jaccard_with_primary
+            1.1              10       10                  0.17
+            1.1              25       21                  0.19
+            1.2              10        2                  0.50
+            1.2              25        4                  1.00
+            1.3              10        1                  0.25
+            1.3              25        1                  0.25
+
+=== Agreement with other screens ===
+Funnel-plot readmission outliers (above the adjusted 99.8% limit): 3 facilities; 0 of them are also flagged by this screen.
+Earlier peer-median rule (review_flag in 01): 10 facilities; 2 also flagged here; Jaccard = 0.17
+
+=== Flag rates by group (a large imbalance means the screen is not neutral across these groups) ===
+      dimension                 group  facilities  flagged  robust  flag_rate_%  robust_rate_%
+      ownership            For profit         268        0       0          0.0            0.0
+      ownership            Government          41        1       0          2.4            0.0
+      ownership            Non-profit         229        3       2          1.3            0.9
+      ownership             Physician           3        0       0          0.0            0.0
+        setting free-standing / other         238        1       1          0.4            0.4
+        setting   hospital-based unit         303        3       1          1.0            0.3
+dual-eligible %             dual: low         188        1       1          0.5            0.5
+dual-eligible %             dual: mid         177        1       0          0.6            0.0
+dual-eligible %            dual: high         176        2       1          1.1            0.6
+        rural %            rural: low         192        1       1          0.5            0.5
+        rural %            rural: mid         171        3       1          1.8            0.6
+        rural %           rural: high         178        0       0          0.0            0.0
+ volume (stays)           volume: low         181        1       0          0.6            0.0
+ volume (stays)           volume: mid         180        3       2          1.7            1.1
+ volume (stays)          volume: high         180        0       0          0.0            0.0
+
+Reminder: this list prioritises facilities for a closer look. It does not establish that any facility is inefficient.

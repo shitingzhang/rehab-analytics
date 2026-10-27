@@ -1,0 +1,7 @@
+alos_ratio_min,dtc_percentile,flagged,jaccard_with_primary
+1.1,10,15,0.13
+1.1,25,43,0.26
+1.2,10,3,0.27
+1.2,25,11,1.0
+1.3,10,1,0.09
+1.3,25,4,0.36

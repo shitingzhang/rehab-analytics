@@ -1,0 +1,222 @@
+Version: v1.2 AS PLANNED (suppressed dual / rural % left missing)
+Facilities in database: 1,165. Impairment covariates (reference = all other conditions): ['imp10_brain_disease_or_condition_non_traumatic', 'imp10_brain_injury_traumatic', 'imp10_hip_or_femur_fracture', 'imp10_hip_or_knee_replacement_amputation_or_other_bone_or_joint_condition', 'imp10_nervous_system_disorder_excluding_stroke', 'imp10_spinal_cord_any', 'imp10_stroke']
+SD of therapy dose across facilities = 23.8 min/day (so +10 min is 0.42 SD)
+
+=== DTC rate (%): analysis sample n = 539 of 1,073 facilities with the outcome, 48 states ===
+    Sample flow (i_019_02_dtc_rs_rate): 1,073 facilities have the outcome
+      Rural % (+10 pts): missing in 459; 614 remain after requiring it (-459)
+      Dual-eligible % (+10 pts): missing in 144; 541 remain after requiring it (-73)
+      Co-treatment share (+5 pts): missing in 5; 539 remain after requiring it (-2)
+      PT share of minutes (+5 pts): missing in 5; 539 remain after requiring it (-0)
+      Therapy dose (+10 min/day): missing in 5; 539 remain after requiring it (-0)
+      Group/concurrent share (+10 pts): missing in 5; 539 remain after requiring it (-0)
+      SLP share of minutes (+5 pts): missing in 5; 539 remain after requiring it (-0)
+      complete cases: 539
+
+=== Readmission RSRR (%): analysis sample n = 539 of 1,073 facilities with the outcome, 48 states ===
+    Sample flow (i_017_01_ppr_pd_rsrr): 1,073 facilities have the outcome
+      Rural % (+10 pts): missing in 459; 614 remain after requiring it (-459)
+      Dual-eligible % (+10 pts): missing in 144; 541 remain after requiring it (-73)
+      Co-treatment share (+5 pts): missing in 5; 539 remain after requiring it (-2)
+      PT share of minutes (+5 pts): missing in 5; 539 remain after requiring it (-0)
+      Therapy dose (+10 min/day): missing in 5; 539 remain after requiring it (-0)
+      Group/concurrent share (+10 pts): missing in 5; 539 remain after requiring it (-0)
+      SLP share of minutes (+5 pts): missing in 5; 539 remain after requiring it (-0)
+      complete cases: 539
+
+=== Standardized payment per stay ($1,000): analysis sample n = 539 of 1,165 facilities with the outcome, 48 states ===
+    Sample flow (std_pay_k): 1,165 facilities have the outcome
+      Rural % (+10 pts): missing in 499; 666 remain after requiring it (-499)
+      Dual-eligible % (+10 pts): missing in 176; 575 remain after requiring it (-91)
+      Physician-owned (vs non-profit): missing in 88; 541 remain after requiring it (-34)
+      Government (vs non-profit): missing in 88; 541 remain after requiring it (-0)
+      For-profit (vs non-profit): missing in 88; 541 remain after requiring it (-0)
+      Impairment: brain disease or condition non traumatic (+10 pts): missing in 88; 541 remain after requiring it (-0)
+      Impairment: spinal cord any (+10 pts): missing in 88; 541 remain after requiring it (-0)
+      Impairment: stroke (+10 pts): missing in 88; 541 remain after requiring it (-0)
+      Impairment: hip or knee replacement amputation or other bone or joint condition (+10 pts): missing in 88; 541 remain after requiring it (-0)
+      Impairment: nervous system disorder excluding stroke (+10 pts): missing in 88; 541 remain after requiring it (-0)
+      Impairment: hip or femur fracture (+10 pts): missing in 88; 541 remain after requiring it (-0)
+      Hospital-based unit (vs free-standing): missing in 88; 541 remain after requiring it (-0)
+      Impairment: brain injury traumatic (+10 pts): missing in 88; 541 remain after requiring it (-0)
+      Therapy dose (+10 min/day): missing in 6; 539 remain after requiring it (-2)
+      SLP share of minutes (+5 pts): missing in 6; 539 remain after requiring it (-0)
+      PT share of minutes (+5 pts): missing in 6; 539 remain after requiring it (-0)
+      Co-treatment share (+5 pts): missing in 6; 539 remain after requiring it (-0)
+      Group/concurrent share (+10 pts): missing in 6; 539 remain after requiring it (-0)
+      complete cases: 539
+
+=== CONFIRMATORY: therapy-dose coefficient in the primary model (Holm-adjusted across the outcomes) ===
+outcome   n   coef  ci_low  ci_high  per_sd     p  p_holm
+    DTC 539 -0.084  -0.260    0.091  -0.201 0.339   0.677
+   RSRR 539  0.011  -0.020    0.042   0.026 0.481   0.677
+    PAY 539 -0.253  -0.423   -0.083  -0.602 0.004   0.013
+
+=== Dose coefficient across the adjustment ladder ===
+outcome                 analysis   n   coef  ci_low  ci_high     p
+    DTC                   M0 raw 539 -0.125  -0.339    0.090 0.249
+    DTC    M1 +ownership/setting 539 -0.196  -0.414    0.022 0.076
+    DTC             M2 +case mix 539 -0.211  -0.431    0.008 0.059
+    DTC    M3 +volume & state FE 539 -0.026  -0.214    0.162 0.783
+    DTC P  primary (+mode & mix) 539 -0.084  -0.260    0.091 0.339
+   RSRR                   M0 raw 539  0.082   0.052    0.111 0.000
+   RSRR    M1 +ownership/setting 539  0.071   0.043    0.098 0.000
+   RSRR             M2 +case mix 539  0.028  -0.004    0.061 0.088
+   RSRR    M3 +volume & state FE 539  0.016  -0.021    0.053 0.390
+   RSRR P  primary (+mode & mix) 539  0.011  -0.020    0.042 0.481
+    PAY                   M0 raw 539 -0.543  -0.806   -0.279 0.000
+    PAY    M1 +ownership/setting 539 -0.506  -0.733   -0.279 0.000
+    PAY             M2 +case mix 539 -0.271  -0.411   -0.131 0.000
+    PAY    M3 +volume & state FE 539 -0.232  -0.402   -0.062 0.009
+    PAY P  primary (+mode & mix) 539 -0.253  -0.423   -0.083 0.004
+
+=== Primary model, all terms except states: DTC rate (%) (exploratory except the dose row) ===
+                                                                                    label   coef  ci_low  ci_high     p
+                                                               Therapy dose (+10 min/day) -0.084  -0.260    0.091 0.339
+                                                         Group/concurrent share (+10 pts)  0.973   0.234    1.711 0.011
+                                                              Co-treatment share (+5 pts) -0.175  -0.943    0.592 0.648
+                                                             PT share of minutes (+5 pts) -1.263  -2.203   -0.324 0.009
+                                                            SLP share of minutes (+5 pts) -0.377  -1.013    0.258 0.238
+                                                               For-profit (vs non-profit)  0.439  -0.679    1.557 0.433
+                                                               Government (vs non-profit) -0.141  -2.002    1.720 0.879
+                                                          Physician-owned (vs non-profit) -1.642  -9.687    6.402 0.683
+                                                   Hospital-based unit (vs free-standing)  0.315  -1.067    1.698 0.648
+                                                                      HCC risk score (+1)  0.615  -0.697    1.928 0.350
+                                                                         Mean age (+1 yr)  0.109  -0.306    0.523 0.601
+                                                                Dual-eligible % (+10 pts) -1.471  -1.852   -1.091 0.000
+                                                                        Rural % (+10 pts) -0.057  -0.376    0.262 0.720
+                           Impairment: brain disease or condition non traumatic (+10 pts)  1.386  -0.030    2.803 0.055
+                                             Impairment: brain injury traumatic (+10 pts) -0.103  -3.106    2.900 0.945
+                                              Impairment: hip or femur fracture (+10 pts)  0.211  -0.938    1.360 0.714
+Impairment: hip or knee replacement amputation or other bone or joint condition (+10 pts)  0.164  -0.796    1.123 0.733
+                           Impairment: nervous system disorder excluding stroke (+10 pts)  0.700  -0.429    1.830 0.218
+                                                    Impairment: spinal cord any (+10 pts)  0.877  -0.816    2.570 0.303
+                                                             Impairment: stroke (+10 pts)  1.140   0.086    2.193 0.035
+                                                                      log(Medicare stays)  0.036  -0.799    0.871 0.931
+
+=== Primary model, all terms except states: Readmission RSRR (%) (exploratory except the dose row) ===
+                                                                                    label   coef  ci_low  ci_high     p
+                                                               Therapy dose (+10 min/day)  0.011  -0.020    0.042 0.481
+                                                         Group/concurrent share (+10 pts)  0.163   0.040    0.286 0.011
+                                                              Co-treatment share (+5 pts)  0.115   0.025    0.205 0.014
+                                                             PT share of minutes (+5 pts) -0.113  -0.313    0.088 0.265
+                                                            SLP share of minutes (+5 pts) -0.084  -0.206    0.038 0.171
+                                                               For-profit (vs non-profit)  0.131  -0.079    0.340 0.216
+                                                               Government (vs non-profit)  0.250  -0.100    0.600 0.157
+                                                          Physician-owned (vs non-profit) -0.042  -0.327    0.242 0.766
+                                                   Hospital-based unit (vs free-standing) -0.032  -0.355    0.291 0.841
+                                                                      HCC risk score (+1)  0.095  -0.159    0.350 0.454
+                                                                         Mean age (+1 yr)  0.023  -0.025    0.070 0.338
+                                                                Dual-eligible % (+10 pts)  0.049  -0.053    0.150 0.339
+                                                                        Rural % (+10 pts) -0.009  -0.090    0.073 0.833
+                           Impairment: brain disease or condition non traumatic (+10 pts)  0.118  -0.171    0.407 0.415
+                                             Impairment: brain injury traumatic (+10 pts) -0.239  -0.532    0.055 0.108
+                                              Impairment: hip or femur fracture (+10 pts) -0.022  -0.320    0.277 0.885
+Impairment: hip or knee replacement amputation or other bone or joint condition (+10 pts)  0.000  -0.252    0.252 0.999
+                           Impairment: nervous system disorder excluding stroke (+10 pts)  0.156   0.008    0.304 0.040
+                                                    Impairment: spinal cord any (+10 pts) -0.128  -0.396    0.139 0.339
+                                                             Impairment: stroke (+10 pts) -0.031  -0.194    0.133 0.706
+                                                                      log(Medicare stays) -0.055  -0.219    0.109 0.505
+
+=== Primary model, all terms except states: Standardized payment per stay ($1,000) (exploratory except the dose row) ===
+                                                                                    label   coef  ci_low  ci_high     p
+                                                               Therapy dose (+10 min/day) -0.253  -0.423   -0.083 0.004
+                                                         Group/concurrent share (+10 pts)  0.203  -0.264    0.669 0.387
+                                                              Co-treatment share (+5 pts) -0.428  -0.983    0.126 0.126
+                                                             PT share of minutes (+5 pts)  0.055  -0.712    0.822 0.886
+                                                            SLP share of minutes (+5 pts)  0.087  -0.470    0.644 0.754
+                                                               For-profit (vs non-profit)  0.223  -0.543    0.989 0.561
+                                                               Government (vs non-profit)  1.084  -1.828    3.995 0.458
+                                                          Physician-owned (vs non-profit)  0.708  -1.056    2.473 0.423
+                                                   Hospital-based unit (vs free-standing)  0.490  -0.551    1.531 0.349
+                                                                      HCC risk score (+1) -0.371  -2.658    1.915 0.745
+                                                                         Mean age (+1 yr) -0.360  -0.745    0.025 0.066
+                                                                Dual-eligible % (+10 pts) -0.024  -0.416    0.368 0.903
+                                                                        Rural % (+10 pts) -0.100  -0.341    0.142 0.411
+                           Impairment: brain disease or condition non traumatic (+10 pts)  1.369   0.147    2.592 0.029
+                                             Impairment: brain injury traumatic (+10 pts)  0.273  -1.424    1.971 0.747
+                                              Impairment: hip or femur fracture (+10 pts)  0.300  -0.367    0.967 0.370
+Impairment: hip or knee replacement amputation or other bone or joint condition (+10 pts)  0.029  -0.863    0.921 0.948
+                           Impairment: nervous system disorder excluding stroke (+10 pts)  0.461   0.033    0.889 0.035
+                                                    Impairment: spinal cord any (+10 pts)  1.636   0.585    2.687 0.003
+                                                             Impairment: stroke (+10 pts)  0.819   0.087    1.551 0.029
+                                                                      log(Medicare stays) -0.704  -1.274   -0.134 0.017
+
+=== Sensitivity analyses: dose coefficient ===
+outcome                                     analysis   n   coef  ci_low  ci_high
+    DTC                   S1 weighted by cases (WLS) 539  0.064  -0.142    0.269
+    DTC           S2 state-clustered SE, no state FE 539 -0.275  -0.491   -0.060
+    DTC     S3 trim top/bottom 1% (dose and outcome) 515 -0.079  -0.305    0.147
+    DTC     S4a at most 1 suppressed impairment cell 384  0.037  -0.179    0.252
+    DTC           S4b suppressed cells filled with 0 538 -0.073  -0.246    0.100
+    DTC          S4b suppressed cells filled with 10 539 -0.087  -0.264    0.090
+    DTC               S5a free-standing / other only 238  0.336  -0.080    0.752
+    DTC                S5b hospital-based units only 301 -0.230  -0.489    0.029
+    DTC S6a quadratic dose: linear term at mean dose 539 -0.036  -0.292    0.220
+    DTC              S8 dose x ownership interaction 539 -0.085  -0.336    0.165
+   RSRR                   S1 weighted by cases (WLS) 539  0.015  -0.029    0.058
+   RSRR           S2 state-clustered SE, no state FE 539  0.022  -0.007    0.050
+   RSRR     S3 trim top/bottom 1% (dose and outcome) 515  0.015  -0.018    0.048
+   RSRR     S4a at most 1 suppressed impairment cell 384 -0.015  -0.052    0.023
+   RSRR           S4b suppressed cells filled with 0 538  0.014  -0.017    0.045
+   RSRR          S4b suppressed cells filled with 10 539  0.010  -0.022    0.041
+   RSRR               S5a free-standing / other only 238  0.018  -0.068    0.104
+   RSRR                S5b hospital-based units only 301  0.004  -0.035    0.043
+   RSRR S6a quadratic dose: linear term at mean dose 539  0.017  -0.030    0.064
+   RSRR              S8 dose x ownership interaction 539 -0.009  -0.048    0.030
+    PAY                   S1 weighted by cases (WLS) 539 -0.206  -0.346   -0.066
+    PAY           S2 state-clustered SE, no state FE 539 -0.302  -0.448   -0.157
+    PAY     S3 trim top/bottom 1% (dose and outcome) 515 -0.248  -0.413   -0.082
+    PAY     S4a at most 1 suppressed impairment cell 384 -0.224  -0.405   -0.044
+    PAY           S4b suppressed cells filled with 0 538 -0.237  -0.410   -0.064
+    PAY          S4b suppressed cells filled with 10 539 -0.257  -0.427   -0.087
+    PAY               S5a free-standing / other only 238 -0.238  -0.457   -0.018
+    PAY                S5b hospital-based units only 301 -0.273  -0.546    0.000
+    PAY S6a quadratic dose: linear term at mean dose 539 -0.303  -0.492   -0.114
+    PAY              S8 dose x ownership interaction 539 -0.182  -0.365    0.001
+
+=== Sensitivity analyses: non-linearity (S6), skew of group share (S9), dose x ownership interaction (S8) ===
+outcome                                             analysis              term   coef  ci_low  ci_high     p
+    DTC                     S6a quadratic dose: squared term      therapy10_sq  0.014  -0.044    0.072 0.636
+    DTC                    S6b dose quartile 2 vs quartile 1               tq2  0.473  -0.636    1.581 0.395
+    DTC                    S6b dose quartile 3 vs quartile 1               tq3 -0.296  -1.507    0.915 0.625
+    DTC                    S6b dose quartile 4 vs quartile 1               tq4 -0.209  -1.208    0.790 0.675
+    DTC  S9 group/concurrent share, middle tertile vs lowest               gt2  0.448  -1.225    2.121 0.593
+    DTC S9 group/concurrent share, highest tertile vs lowest               gt3  2.324   0.600    4.048 0.009
+    DTC                      S8 dose x ownership interaction dose_x_for_profit  0.026  -0.392    0.444 0.902
+    DTC                      S8 dose x ownership interaction dose_x_government -0.097  -0.751    0.558 0.768
+   RSRR                     S6a quadratic dose: squared term      therapy10_sq  0.002  -0.008    0.012 0.736
+   RSRR                    S6b dose quartile 2 vs quartile 1               tq2 -0.189  -0.379    0.002 0.052
+   RSRR                    S6b dose quartile 3 vs quartile 1               tq3 -0.058  -0.261    0.145 0.570
+   RSRR                    S6b dose quartile 4 vs quartile 1               tq4  0.171  -0.026    0.369 0.087
+   RSRR  S9 group/concurrent share, middle tertile vs lowest               gt2 -0.044  -0.205    0.117 0.586
+   RSRR S9 group/concurrent share, highest tertile vs lowest               gt3  0.137  -0.075    0.350 0.199
+   RSRR                      S8 dose x ownership interaction dose_x_for_profit  0.047  -0.005    0.100 0.078
+   RSRR                      S8 dose x ownership interaction dose_x_government  0.026  -0.093    0.144 0.661
+    PAY                     S6a quadratic dose: squared term      therapy10_sq -0.014  -0.061    0.033 0.546
+    PAY                    S6b dose quartile 2 vs quartile 1               tq2 -0.279  -1.299    0.740 0.584
+    PAY                    S6b dose quartile 3 vs quartile 1               tq3 -1.179  -2.160   -0.198 0.020
+    PAY                    S6b dose quartile 4 vs quartile 1               tq4 -1.213  -2.227   -0.200 0.020
+    PAY  S9 group/concurrent share, middle tertile vs lowest               gt2  1.134   0.183    2.085 0.020
+    PAY S9 group/concurrent share, highest tertile vs lowest               gt3  1.078   0.027    2.129 0.045
+    PAY                      S8 dose x ownership interaction dose_x_for_profit  0.086  -0.170    0.341 0.502
+    PAY                      S8 dose x ownership interaction dose_x_government -1.132  -2.235   -0.030 0.044
+
+=== Leave-one-state-out: range of the dose coefficient ===
+           min  median    max
+outcome                      
+DTC     -0.115  -0.084 -0.053
+PAY     -0.300  -0.253 -0.207
+RSRR     0.005   0.011  0.017
+
+=== Funnel plot (readmission RSRR): 1,073 facilities; reference = precision-weighted mean 9.48% ===
+    over-dispersion phi = 0.81; between-facility SD tau = 0.00 points; outside adjusted 99.8% limits: above 9, below 3
+
+=== Readmission outliers by ownership (over-dispersion-adjusted 99.8% limit) ===
+ownership_type  facilities  mean_rsrr  above_99_8  below_99_8  above_95  pct_above_99_8
+    For profit         467   9.790214           8           0        49             1.7
+    Government          91   9.244286           0           0         1             0.0
+    Non-profit         509   9.189391           1           3         4             0.2
+     Physician           6   9.611667           0           0         0             0.0
+
+Caveat: facility-level associations; measure windows differ; not causal. Only the dose rows above are confirmatory.

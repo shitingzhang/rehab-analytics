@@ -1,0 +1,70 @@
+outcome,analysis,term,n,coef,ci_low,ci_high,p
+DTC,S1 weighted by cases (WLS),therapy10,1063,0.0239,-0.1567,0.2045,0.7915
+DTC,"S2 state-clustered SE, no state FE",therapy10,1063,-0.1307,-0.2751,0.0138,0.0752
+DTC,S3 trim top/bottom 1% (dose and outcome),therapy10,1021,-0.0421,-0.1943,0.1101,0.5808
+DTC,S4a at most 1 suppressed impairment cell,therapy10,710,-0.0289,-0.2283,0.1705,0.7718
+DTC,S4b suppressed cells filled with 0,therapy10,1059,-0.055,-0.2241,0.1141,0.5167
+DTC,S4b suppressed cells filled with 10,therapy10,1063,-0.072,-0.2338,0.0898,0.3759
+DTC,S5a free-standing / other only,therapy10,381,0.1968,-0.1121,0.5058,0.2061
+DTC,S5b hospital-based units only,therapy10,682,-0.1692,-0.3419,0.0035,0.0547
+DTC,S6a quadratic dose: linear term at mean dose,therapy10_c,1063,0.0217,-0.1509,0.1943,0.8018
+DTC,S6a quadratic dose: squared term,therapy10_sq,1063,0.0287,-0.0041,0.0616,0.0853
+DTC,S6b dose quartile 2 vs quartile 1,tq2,1063,-0.3166,-1.2165,0.5833,0.4831
+DTC,S6b dose quartile 3 vs quartile 1,tq3,1063,-0.8558,-1.9108,0.1993,0.1096
+DTC,S6b dose quartile 4 vs quartile 1,tq4,1063,-0.6663,-1.5296,0.1971,0.1274
+DTC,"S9 group/concurrent share, middle tertile vs lowest",gt2,1063,0.0992,-0.5346,0.733,0.7545
+DTC,"S9 group/concurrent share, highest tertile vs lowest",gt3,1063,1.5775,0.5761,2.5789,0.0026
+DTC,"S10 as planned (v1.2): complete cases, no fill",therapy10,539,-0.0845,-0.2603,0.0913,0.3387
+DTC,S11 suppressed dual / rural filled with 1 beneficiaries,therapy10,1063,-0.0664,-0.23,0.0973,0.4192
+DTC,S11 suppressed dual / rural filled with 10 beneficiaries,therapy10,1063,-0.0683,-0.2341,0.0974,0.4116
+DTC,S12 without rural % and dual %,therapy10,1063,-0.0624,-0.2286,0.1039,0.4547
+DTC,S13 excluding low-confidence facility links,therapy10,1031,-0.0589,-0.238,0.1203,0.5123
+DTC,S8 dose x ownership interaction,therapy10,1063,-0.1225,-0.3402,0.0952,0.2638
+DTC,S8 dose x ownership interaction,dose_x_for_profit,1063,0.1326,-0.1963,0.4616,0.4219
+DTC,S8 dose x ownership interaction,dose_x_government,1063,0.1002,-0.2822,0.4826,0.6011
+RSRR,S1 weighted by cases (WLS),therapy10,1063,0.0087,-0.0222,0.0395,0.5758
+RSRR,"S2 state-clustered SE, no state FE",therapy10,1063,0.0326,0.0089,0.0563,0.008
+RSRR,S3 trim top/bottom 1% (dose and outcome),therapy10,1019,0.019,-0.0023,0.0403,0.0794
+RSRR,S4a at most 1 suppressed impairment cell,therapy10,710,0.0226,-0.0087,0.0538,0.1529
+RSRR,S4b suppressed cells filled with 0,therapy10,1059,0.0243,-0.0021,0.0508,0.0707
+RSRR,S4b suppressed cells filled with 10,therapy10,1063,0.0226,-0.0041,0.0494,0.0955
+RSRR,S5a free-standing / other only,therapy10,381,-0.0124,-0.0643,0.0395,0.6321
+RSRR,S5b hospital-based units only,therapy10,682,0.029,-0.0008,0.0588,0.0562
+RSRR,S6a quadratic dose: linear term at mean dose,therapy10_c,1063,0.0201,-0.0131,0.0533,0.2292
+RSRR,S6a quadratic dose: squared term,therapy10_sq,1063,-0.0009,-0.0062,0.0045,0.7471
+RSRR,S6b dose quartile 2 vs quartile 1,tq2,1063,-0.021,-0.1579,0.116,0.7598
+RSRR,S6b dose quartile 3 vs quartile 1,tq3,1063,0.07,-0.0626,0.2026,0.2941
+RSRR,S6b dose quartile 4 vs quartile 1,tq4,1063,0.2218,0.0687,0.375,0.0054
+RSRR,"S9 group/concurrent share, middle tertile vs lowest",gt2,1063,-0.008,-0.1363,0.1204,0.9012
+RSRR,"S9 group/concurrent share, highest tertile vs lowest",gt3,1063,0.1663,0.0298,0.3029,0.018
+RSRR,"S10 as planned (v1.2): complete cases, no fill",therapy10,539,0.011,-0.0202,0.0423,0.4812
+RSRR,S11 suppressed dual / rural filled with 1 beneficiaries,therapy10,1063,0.0228,-0.0041,0.0497,0.0948
+RSRR,S11 suppressed dual / rural filled with 10 beneficiaries,therapy10,1063,0.0228,-0.0041,0.0496,0.0944
+RSRR,S12 without rural % and dual %,therapy10,1063,0.0245,-0.0021,0.051,0.0701
+RSRR,S13 excluding low-confidence facility links,therapy10,1031,0.0195,-0.0085,0.0475,0.1687
+RSRR,S8 dose x ownership interaction,therapy10,1063,0.0091,-0.025,0.0433,0.5931
+RSRR,S8 dose x ownership interaction,dose_x_for_profit,1063,0.0328,-0.0009,0.0666,0.0565
+RSRR,S8 dose x ownership interaction,dose_x_government,1063,0.0249,-0.0393,0.0891,0.4394
+PAY,S1 weighted by cases (WLS),therapy10,1065,-0.2223,-0.3446,-0.1001,0.0006
+PAY,"S2 state-clustered SE, no state FE",therapy10,1065,-0.281,-0.4051,-0.1568,0.0
+PAY,S3 trim top/bottom 1% (dose and outcome),therapy10,1021,-0.2141,-0.3375,-0.0906,0.001
+PAY,S4a at most 1 suppressed impairment cell,therapy10,710,-0.252,-0.3755,-0.1286,0.0002
+PAY,S4b suppressed cells filled with 0,therapy10,1060,-0.2698,-0.3904,-0.1493,0.0
+PAY,S4b suppressed cells filled with 10,therapy10,1065,-0.2854,-0.4088,-0.1621,0.0
+PAY,S5a free-standing / other only,therapy10,382,-0.2155,-0.3966,-0.0344,0.0207
+PAY,S5b hospital-based units only,therapy10,683,-0.2838,-0.4396,-0.1279,0.0006
+PAY,S6a quadratic dose: linear term at mean dose,therapy10_c,1065,-0.3453,-0.5102,-0.1804,0.0001
+PAY,S6a quadratic dose: squared term,therapy10_sq,1065,-0.0219,-0.0569,0.0132,0.216
+PAY,S6b dose quartile 2 vs quartile 1,tq2,1065,-0.8376,-1.6226,-0.0526,0.037
+PAY,S6b dose quartile 3 vs quartile 1,tq3,1065,-1.8041,-2.6181,-0.9901,0.0
+PAY,S6b dose quartile 4 vs quartile 1,tq4,1065,-1.7195,-2.5639,-0.8752,0.0002
+PAY,"S9 group/concurrent share, middle tertile vs lowest",gt2,1065,0.5855,-0.5025,1.6735,0.2849
+PAY,"S9 group/concurrent share, highest tertile vs lowest",gt3,1065,0.4186,-0.5422,1.3795,0.3857
+PAY,"S10 as planned (v1.2): complete cases, no fill",therapy10,539,-0.2531,-0.4234,-0.0828,0.0044
+PAY,S11 suppressed dual / rural filled with 1 beneficiaries,therapy10,1065,-0.2775,-0.4011,-0.1539,0.0
+PAY,S11 suppressed dual / rural filled with 10 beneficiaries,therapy10,1065,-0.2776,-0.4007,-0.1545,0.0
+PAY,S12 without rural % and dual %,therapy10,1065,-0.2741,-0.3955,-0.1526,0.0
+PAY,S13 excluding low-confidence facility links,therapy10,1033,-0.268,-0.3974,-0.1386,0.0001
+PAY,S8 dose x ownership interaction,therapy10,1065,-0.2975,-0.4571,-0.1379,0.0005
+PAY,S8 dose x ownership interaction,dose_x_for_profit,1065,0.185,-0.0156,0.3856,0.0699
+PAY,S8 dose x ownership interaction,dose_x_government,1065,-0.3631,-0.9211,0.1949,0.1972
