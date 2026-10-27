@@ -1,0 +1,16 @@
+dimension,group,facilities,flagged,robust,flag_rate_%,robust_rate_%
+ownership,For profit,268,0,0,0.0,0.0
+ownership,Government,41,1,0,2.4,0.0
+ownership,Non-profit,229,3,2,1.3,0.9
+ownership,Physician,3,0,0,0.0,0.0
+setting,free-standing / other,238,1,1,0.4,0.4
+setting,hospital-based unit,303,3,1,1.0,0.3
+dual-eligible %,dual: low,188,1,1,0.5,0.5
+dual-eligible %,dual: mid,177,1,0,0.6,0.0
+dual-eligible %,dual: high,176,2,1,1.1,0.6
+rural %,rural: low,192,1,1,0.5,0.5
+rural %,rural: mid,171,3,1,1.8,0.6
+rural %,rural: high,178,0,0,0.0,0.0
+volume (stays),volume: low,181,1,0,0.6,0.0
+volume (stays),volume: mid,180,3,2,1.7,1.1
+volume (stays),volume: high,180,0,0,0.0,0.0

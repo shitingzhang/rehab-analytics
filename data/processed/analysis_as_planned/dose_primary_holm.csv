@@ -1,0 +1,4 @@
+outcome,analysis,term,n,coef,ci_low,ci_high,p,r2,states,per_sd,p_holm
+DTC,P  primary (+mode & mix),therapy10,539,-0.0845,-0.2603,0.0913,0.3387,0.3857,48,-0.2008,0.6774
+RSRR,P  primary (+mode & mix),therapy10,539,0.011,-0.0202,0.0423,0.4812,0.35,48,0.0262,0.6774
+PAY,P  primary (+mode & mix),therapy10,539,-0.2531,-0.4234,-0.0828,0.0044,0.3718,48,-0.6016,0.0133

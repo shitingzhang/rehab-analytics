@@ -1,0 +1,41 @@
+PAC provider rows: 1,165; General Information rows: 1,222; linked: 1,077 (each PAC CCN linked at most once: True; each source CCN at most once: True)
+PAC providers with no General Information record: 88
+
+=== Agreement of identifiers by link type (match columns in %) ===
+                               links  state_match  city_match  zip_match  median_name_jaccard  low_confidence
+link                                                                                                         
+crosswalk: ambiguous_resolved      6        100.0        83.3       83.3                 1.00               0
+crosswalk: unique                686        100.0        94.0       84.1                 0.75              26
+exact CCN                        385        100.0        99.5       99.5                 1.00               1
+
+=== Low-confidence links: 27 (state differs, or both city and ZIP differ) - listed for manual review ===
+             link ccn_source    ccn                                             name_g                                            name_p           city_g        city_p state_g state_p zip_g zip_p
+        exact CCN     173035 173035  CLEARSKY REHABILITATION HOSPITAL OF ELWOOD ST JOS CLEARSKY REHABILITATION HOSPITAL OF ELWOOD ST JOS           ELWOOD       WATHENA      KS      KS 66024 66090
+crosswalk: unique     01T139 010139                       AMI BROOKWOOD MEDICAL CENTER                  BROOKWOOD BAPTIST MEDICAL CENTER         HOMEWOOD      VESTAVIA      AL      AL 35209 35216
+crosswalk: unique     03T114 030114                              NORTHWEST TRANSITIONS                               ORO VALLEY HOSPITAL           TUCSON    ORO VALLEY      AZ      AZ 85704 85755
+crosswalk: unique     05T135 050135        SOUTHERN CALIFORNIA HOSPITAL AT CULVER CITY         SOUTHERN CALIFORNIA HOSPITAL AT HOLLYWOOD      CULVER CITY     HOLLYWOOD      CA      CA 90231 90028
+crosswalk: unique     05T308 050308                        EL CAMINO HOSP OF LOS GATOS                                EL CAMINO HOSPITAL        LOS GATOS MOUNTAIN VIEW      CA      CA 95032 94040
+crosswalk: unique     05T320 050320                                  FAIRMONT HOSPITAL                                 HIGHLAND HOSPITAL      SAN LEANDRO       OAKLAND      CA      CA 94578 94602
+crosswalk: unique     05T382 050382                       QUEEN OF THE VALLEY HOSPITAL           EMANATE HEALTH INTER COMMUNITY HOSPITAL      WEST COVINA        COVINA      CA      CA 91790 91723
+crosswalk: unique     05T549 050549                 LOS ROBLES HOSPITAL MEDICAL CENTER                LOS ROBLES HOSPITAL MEDICAL CENTER WESTLAKE VILLAGE THOUSAND OAKS      CA      CA 91362 91360
+crosswalk: unique     07T022 070022                            YALE NEW HAVEN HOSPITAL                           YALE NEW HAVEN HOSPITAL          MILFORD     NEW HAVEN      CT      CT 06460 06504
+crosswalk: unique     08T001 080001   CENTER FOR REHABILITATION AT WILMINGTON HOSPITAL                                    CHRISTIANACARE       WILMINGTON        NEWARK      DE      DE 19899 19718
+crosswalk: unique     10T167 100167                        PLANTATION GENERAL HOSPITAL                        HCA FLORIDA MERCY HOSPITAL       PLANTATION         MIAMI      FL      FL 33317 33133
+crosswalk: unique     14T127 140127                    BROMENN REGIONAL MEDICAL CENTER                      CARLE BROMENN MEDICAL CENTER      BLOOMINGTON        NORMAL      IL      IL 61702 61761
+crosswalk: unique     15T035 150035                                    PORTER HOSPITAL                           NORTHWEST HEALTH PORTER          PORTAGE    VALPARAISO      IN      IN 46368 46383
+crosswalk: unique     15T090 150090                     FRANCISCAN HEALTH DYER HAMMOND                            FRANCISCAN HEALTH DYER          HAMMOND          DYER      IN      IN 46320 46311
+crosswalk: unique     19T176 190176                      TULANE INPATIENT REHAB CENTER                   EAST JEFFERSON GENERAL HOSPITAL      NEW ORLEANS      METAIRIE      LA      LA 70112 70006
+crosswalk: unique     26T023 260023                           MERCY HOSPITAL JEFFERSON                          MERCY HOSPITAL JEFFERSON     CRYSTAL CITY        FESTUS      MO      MO 63019 63028
+crosswalk: unique     26T062 260062                        ST LUKES NORTHLAND HOSPITAL                        SAINT LUKES NORTH HOSPITAL       SMITHVILLE   KANSAS CITY      MO      MO 64089 64154
+crosswalk: unique     26T141 260141       CAPITAL REGION MEDICAL CENTER REHABILITATION                UNIVERSITY OF MISSOURI HEALTH CARE   JEFFERSON CITY      COLUMBIA      MO      MO 65101 65212
+crosswalk: unique     31T019 310019                          ST JOSEPHS WAYNE HOSPITAL         ST JOSEPH S UNIVERSITY MEDICAL CENTER INC            WAYNE      PATERSON      NJ      NJ 07470 07503
+crosswalk: unique     36T068 360068                       FLOWER REHABILITATION CENTER                               TOLEDO HOSPITAL THE         SYLVANIA        TOLEDO      OH      OH 43560 43606
+crosswalk: unique     36T112 360112    MERCY ST CHARLES ACUTE INPATIENT REHABILITATION            MERCY HEALTH ST VINCENT MEDICAL CENTER           OREGON        TOLEDO      OH      OH 43616 43608
+crosswalk: unique     39T044 390044            THE READING HOSPITAL AND MEDICAL CENTER                                  READING HOSPITAL       WYOMISSING  WEST READING      PA      PA 19610 19611
+crosswalk: unique     39T142 390142                                         MOSS REHAB                    ALBERT EINSTEIN MEDICAL CENTER      ELKINS PARK  PHILADELPHIA      PA      PA 19027 19141
+crosswalk: unique     40T016 400016              HOSPITAL AUXILIO MUTUO OF PUERTO RICO                            AUXILIO MUTUO HOSPITAL         HATO REY      SAN JUAN      PR      PR 00919 00918
+crosswalk: unique     45T388 450388                       METHODIST HOSPITAL NORTHEAST                                METHODIST HOSPITAL         LIVE OAK   SAN ANTONIO      TX      TX 78233 78229
+crosswalk: unique     47T003 470003 THE UNIVERSITY OF VERMONT MEDICAL CENTER INPATIENT              UNIVERSITY OF VERMONT MEDICAL CENTER       COLCHESTER    BURLINGTON      VT      VT 05446 05401
+crosswalk: unique     52T009 520009                           ASCENSION MERCY HOSPITAL        ASCENSION NE WISCONSIN ST ELIZABETH CAMPUS          OSHKOSH      APPLETON      WI      WI 54904 54915
+
+Name similarity is descriptive only: unit names often differ between files (e.g. hospital name vs rehab unit name).
