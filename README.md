@@ -118,5 +118,5 @@ code, check the statistics and draft documentation. Every decision was reviewed 
 
 ## Author
 
-**Shiting Zhang** — rehabilitation-therapy background, working in health data science.
+**Shiting Zhang** — rehabilitation background, working in health data science.
 GitHub: [@shitingzhang](https://github.com/shitingzhang)
