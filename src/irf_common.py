@@ -40,7 +40,7 @@ def label(term: str) -> str:
     return term
 
 
-# ------------------------------------------------------------------------------ statistics
+# statistics
 def ols_cluster(y, X, groups, w=None):
     """OLS / WLS with CR1 cluster-robust covariance. Returns beta, se, dof (G-1), r2."""
     y, X = np.asarray(y, float), np.asarray(X, float)
@@ -96,7 +96,7 @@ def fit(s: pd.DataFrame, ycol: str, terms, state_fe=True, w=None):
     return tidy(names, beta, se, dof).set_index("term"), r2, dof + 1
 
 
-# ------------------------------------------------------------------------------ data
+# data
 def load_facility() -> pd.DataFrame:
     if not os.path.exists(DB_PATH):
         raise SystemExit(f"{DB_PATH} not found. Run 02_build_database.py first.")

@@ -47,9 +47,7 @@ MEASURES_KEEP = [  # QRP measure codes used downstream (see IRF_Data_Dictionary.
 ]
 
 
-# ------------------------------------------------------------------------------
 # Helpers
-# ------------------------------------------------------------------------------
 def snake(name: str) -> str:
     return re.sub(r"[^0-9a-z]+", "_", str(name).strip().lower()).strip("_")
 
@@ -101,9 +99,7 @@ class Audit:
         return pd.DataFrame(self.rows)
 
 
-# ------------------------------------------------------------------------------
 # 1. PAC utilization file (one row per provider for FY2024; also contains NATION/STATE rows)
-# ------------------------------------------------------------------------------
 def build_ccn_crosswalk(source_ids: pd.Series, pac_ids: set, audit: Audit) -> dict:
     """Provider Data files identify hospital-based rehab units with a letter in position 3
     ('01T011'); the PAC utilization file uses a numeric ID for the same facility ('010011').
@@ -262,9 +258,7 @@ def clean_pac(audit: Audit) -> pd.DataFrame:
     return pac
 
 
-# ------------------------------------------------------------------------------
 # 2. Quality Reporting Program (long format: one row per provider x measure)
-# ------------------------------------------------------------------------------
 def clean_qrp(audit: Audit, xwalk: dict) -> pd.DataFrame:
     qrp = read_raw("qrp")
     ccn_col = find_col(qrp, r"ccn", r"certification")
@@ -326,9 +320,7 @@ def clean_qrp(audit: Audit, xwalk: dict) -> pd.DataFrame:
     return wide
 
 
-# ------------------------------------------------------------------------------
 # 3. General information + conditions (case mix by diagnosis group)
-# ------------------------------------------------------------------------------
 def clean_general(audit: Audit, xwalk: dict) -> pd.DataFrame:
     gen = read_raw("general")
     gen["ccn_source"] = to_ccn(gen[find_col(gen, r"ccn", r"certification_number")])
@@ -381,9 +373,7 @@ def clean_conditions(audit: Audit, xwalk: dict) -> pd.DataFrame:
     return wide.reset_index()
 
 
-# ------------------------------------------------------------------------------
 # 4. Build the facility-level analytical table
-# ------------------------------------------------------------------------------
 def run_quality_pipeline() -> None:
     os.makedirs(PROCESSED_DIR, exist_ok=True)
     audit = Audit()
