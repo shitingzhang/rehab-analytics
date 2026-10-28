@@ -64,7 +64,7 @@ def row(outcome, analysis, term, n, tab):
             "ci_high": t.ci_high, "p": t.p}
 
 
-# ------------------------------------------------------------------------------ main analyses
+# main analyses
 def run_outcome(d, key, sd_min):
     ycol, wcol, ylab = OUTCOMES[key]
     sp = specs(d)
@@ -178,7 +178,7 @@ def run_outcome(d, key, sd_min):
     return pd.DataFrame(ladder), full, pd.DataFrame(sens), loso, len(s)
 
 
-# ------------------------------------------------------------------------------ funnel plot
+# funnel plot
 def funnel(d):
     y, lo, hi, v = ("i_017_01_ppr_pd_rsrr", "i_017_01_ppr_pd_rsrr_2_5", "i_017_01_ppr_pd_rsrr_97_5", "i_017_01_ppr_pd_volume")
     f = d.dropna(subset=[y, lo, hi, v]).copy()
@@ -220,7 +220,7 @@ def funnel(d):
     return f, summ
 
 
-# ------------------------------------------------------------------------------ figures
+# figures
 def figures(ladder, sens):
     n = ladder["outcome"].nunique()
     fig, axes = plt.subplots(1, n, figsize=(4.4 * n, 4.2), squeeze=False)
@@ -251,7 +251,7 @@ def figures(ladder, sens):
     plt.close(fig)
 
 
-# ------------------------------------------------------------------------------ main
+# main
 def main():
     os.makedirs(OUT_DIR, exist_ok=True)
     os.makedirs(FIG_DIR, exist_ok=True)
