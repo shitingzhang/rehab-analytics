@@ -341,20 +341,25 @@ def clean_general(audit: Audit, xwalk: dict) -> pd.DataFrame:
 
 
 def clean_conditions(audit: Audit, xwalk: dict) -> pd.DataFrame:
-    """Impairment-group case mix. Counts below 11 are suppressed by CMS (true value 1-10); dropping them
-    would delete a large share of facilities from any model, so they are filled with the midpoint
-    (SUPPRESSED_FILL) and the number of suppressed cells is kept so the choice can be tested."""
+    """Historical impairment preparation, retained to reproduce previously reported models.
+
+    The legacy token set also fills Not Available, which is NOT a known small count.
+    DQ-21 counts legacy fill-eligible rows before deduplication across all condition providers;
+    DQ-22 counts providers meeting its legacy threshold. dx_n_suppressed_cells keeps the
+    pre-deduplication row count per provider. Current mode/mix construction handles these separately
+    in mode_mix_post_audit.py and rejects duplicate keys rather than silently deduplicating.
+    """
     cond = read_raw("conditions")
     cond["ccn_source"] = to_ccn(cond[find_col(cond, r"ccn", r"certification_number")])
     cond["ccn"] = cond["ccn_source"].map(xwalk).fillna(cond["ccn_source"])
     cond_col, cnt_col = find_col(cond, r"^condition$"), find_col(cond, r"^count$")
     cond["suppressed"] = is_suppressed(cond[cnt_col])
     cond["n_filled"] = to_num(cond[cnt_col]).where(~cond["suppressed"], SUPPRESSED_FILL)
-    audit.add("DQ-21", "conditions", "Condition counts suppressed ('less than 11')", cond["suppressed"].sum(),
-              f"Filled with {SUPPRESSED_FILL} (midpoint of 1-10) for shares; per-facility count kept as dx_n_suppressed_cells")
+    audit.add("DQ-21", "conditions", "Legacy fill-eligible condition rows (all tokens; before deduplication)", cond["suppressed"].sum(),
+              f"Historical reproduction: filled with {SUPPRESSED_FILL}, including Not Available (not a known small count); legacy per-provider count is dx_n_suppressed_cells")
     n_supp = cond.groupby("ccn")["suppressed"].sum()
-    audit.add("DQ-22", "conditions", "Facilities with 3 or more suppressed impairment groups",
-              (n_supp >= 3).sum(), "Kept; used in the sensitivity analysis (restrict to <=1 suppressed)")
+    audit.add("DQ-22", "conditions", "Condition providers with >=3 legacy fill-eligible rows (before deduplication; not restricted to PAC)",
+              (n_supp >= 3).sum(), "Historical rule includes Not Available; legacy sensitivity restricts to <=1 legacy fill-eligible row, not the current true-suppression count")
     dup = cond.duplicated(subset=["ccn", cond_col], keep="first")
     audit.add("DQ-23", "conditions", "Duplicate (CCN, condition) rows", dup.sum(), "Deduplicated (kept first)")
     cond = cond[~dup]
@@ -426,4 +431,6 @@ def run_quality_pipeline() -> None:
 
 
 if __name__ == "__main__":
-    run_quality_pipeline()
+    from input_provenance import recorded_stage
+    with recorded_stage("clean"):
+        run_quality_pipeline()

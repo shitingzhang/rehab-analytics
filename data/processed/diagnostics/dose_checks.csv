@@ -1,0 +1,13 @@
+outcome,analysis,n,coef,ci_low,ci_high
+DTC,primary,1063,-0.0674,-0.2321,0.0974
+DTC,without HCC risk score,1063,-0.0655,-0.2338,0.1028
+DTC,without dual % and its indicator,1063,-0.0547,-0.2127,0.1033
+DTC,without 79 facilities with Cook's D > 4/n,984,-0.1151,-0.2458,0.0157
+RSRR,primary,1063,0.0228,-0.0041,0.0497
+RSRR,without HCC risk score,1063,0.0232,-0.0032,0.0496
+RSRR,without dual % and its indicator,1063,0.0237,-0.0025,0.0499
+RSRR,without 62 facilities with Cook's D > 4/n,1001,0.0231,-0.003,0.0492
+PAY,primary,1065,-0.2775,-0.4009,-0.1541
+PAY,without HCC risk score,1065,-0.2739,-0.3947,-0.1531
+PAY,without dual % and its indicator,1065,-0.2757,-0.3978,-0.1537
+PAY,without 61 facilities with Cook's D > 4/n,1004,-0.2011,-0.2984,-0.1038

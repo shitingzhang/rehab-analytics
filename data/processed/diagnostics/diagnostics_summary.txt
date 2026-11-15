@@ -1,0 +1,64 @@
+Diagnostics of the v1.3 primary model (validation only; the primary model is unchanged).
+
+=== 1) VIF after removing state means (> 5 noted, > 10 a concern); largest 8 per outcome ===
+--- DTC ---
+                                                         label  vif
+                                           log(Medicare stays) 3.02
+                        Hospital-based unit (vs free-standing) 2.86
+                                 SLP share of minutes (+5 pts) 2.61
+                                  PT share of minutes (+5 pts) 2.46
+                                  Impairment: stroke (+10 pts) 2.45
+                   Impairment: hip or femur fracture (+10 pts) 2.44
+Impairment: nervous system disorder excluding stroke (+10 pts) 2.26
+                                              Mean age (+1 yr) 1.90
+--- RSRR ---
+                                                         label  vif
+                                           log(Medicare stays) 3.02
+                        Hospital-based unit (vs free-standing) 2.86
+                                 SLP share of minutes (+5 pts) 2.61
+                                  PT share of minutes (+5 pts) 2.46
+                                  Impairment: stroke (+10 pts) 2.45
+                   Impairment: hip or femur fracture (+10 pts) 2.44
+Impairment: nervous system disorder excluding stroke (+10 pts) 2.26
+                                              Mean age (+1 yr) 1.90
+--- PAY ---
+                                                         label  vif
+                                           log(Medicare stays) 3.04
+                        Hospital-based unit (vs free-standing) 2.87
+                                 SLP share of minutes (+5 pts) 2.64
+                                  PT share of minutes (+5 pts) 2.48
+                                  Impairment: stroke (+10 pts) 2.45
+                   Impairment: hip or femur fracture (+10 pts) 2.43
+Impairment: nervous system disorder excluding stroke (+10 pts) 2.25
+                                              Mean age (+1 yr) 1.86
+Terms with VIF > 5: 0; VIF > 10: 0
+
+VIF of the dose, the HCC risk score and dual %:
+outcome                      DTC   PAY  RSRR
+label                                       
+Dual-eligible % (+10 pts)   1.68  1.65  1.68
+HCC risk score (+1)         1.59  1.59  1.59
+Therapy dose (+10 min/day)  1.11  1.11  1.11
+
+=== 2) and 4) Dose coefficient (+10 min/day) under the diagnostic refits ===
+outcome                                  analysis    n   coef  ci_low  ci_high
+    DTC                                   primary 1063 -0.067  -0.232    0.097
+    DTC                    without HCC risk score 1063 -0.065  -0.234    0.103
+    DTC          without dual % and its indicator 1063 -0.055  -0.213    0.103
+    DTC without 79 facilities with Cook's D > 4/n  984 -0.115  -0.246    0.016
+   RSRR                                   primary 1063  0.023  -0.004    0.050
+   RSRR                    without HCC risk score 1063  0.023  -0.003    0.050
+   RSRR          without dual % and its indicator 1063  0.024  -0.003    0.050
+   RSRR without 62 facilities with Cook's D > 4/n 1001  0.023  -0.003    0.049
+    PAY                                   primary 1065 -0.278  -0.401   -0.154
+    PAY                    without HCC risk score 1065 -0.274  -0.395   -0.153
+    PAY          without dual % and its indicator 1065 -0.276  -0.398   -0.154
+    PAY without 61 facilities with Cook's D > 4/n 1004 -0.201  -0.298   -0.104
+
+=== 3) Residuals ===
+outcome    n  skewness  excess_kurtosis  max_cooks_d  n_cooks_gt_4_over_n  n_leverage_1_kept
+    DTC 1063     -0.28            1.245        0.041                   79                  2
+   RSRR 1063      0.14           -0.022        0.036                   62                  2
+    PAY 1065      3.14           18.689        0.135                   61                  2
+
+Figure: reports/figures/diagnostics_residuals.png

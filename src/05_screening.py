@@ -7,7 +7,9 @@ Case-mix-adjusted "priority for review" screen for inpatient rehabilitation faci
   1. Expected ALOS and expected discharge-to-community (DTC) rate from CASE-MIX variables only
      (ownership, state and therapy are deliberately excluded so the screen does not adjust away what it looks for).
   2. Primary rule: observed/expected ALOS >= 1.20  AND  DTC residual in the lowest quartile.
-  3. Stability: refit on 500 bootstrap resamples; a facility is a robust flag if flagged in >= 80% of them.
+  3. Refit frequency: refit on 500 facility bootstrap resamples and re-apply to all original facilities.
+     Legacy robust_flag means frequency >= 80%, independently of the original primary flag.
+     This does not estimate a probability of poor care or include all outcome uncertainty.
   4. Sensitivity grid over thresholds; convergence with funnel-plot outliers; fairness of flag rates across groups.
 This produces a LIST FOR FURTHER REVIEW, not a verdict: there is no ground truth, and unmeasured differences
 between patients can produce a flag. Facilities are never labelled inefficient.
@@ -15,6 +17,9 @@ between patients can produce a flag. Facilities are never labelled inefficient.
 import io
 import os
 import sys
+from pathlib import Path
+from model_publication import publish_batch
+from screening_publication import REQUIRED, validate_screen_files, current_screen_dir
 
 import matplotlib
 import numpy as np
@@ -29,7 +34,8 @@ AS_PLANNED = "--as-planned" in sys.argv     # v1.2: no fill for suppressed dual 
 PAC = None if AS_PLANNED else PAC_FILL
 OUT_DIR = "data/processed/screening_as_planned" if AS_PLANNED else "data/processed/screening"
 FIG_DIR = "reports/figures/as_planned" if AS_PLANNED else "reports/figures"
-FUNNEL_PATH = "data/processed/analysis/funnel_flags.csv"
+FUNNEL_PATH = ("data/processed/analysis_as_planned/funnel_flags.csv" if AS_PLANNED
+               else "data/processed/analysis/funnel_flags.csv")
 RATIO, DTC_PCT = 1.20, 25            # primary thresholds (pre-specified)
 GRID_RATIOS, GRID_PCTS = (1.10, 1.20, 1.30), (10, 25)
 B, ROBUST_SHARE, SEED = 500, 0.80, 2026
@@ -42,8 +48,7 @@ def out(*a):
     print(*a, file=buf)
 
 
-def lstsq(X, y):
-    return np.linalg.lstsq(X, y, rcond=None)[0]
+from screening_guards import lstsq, components, r_squared
 
 
 def jaccard(a, b):
@@ -55,7 +60,7 @@ def tertile(s, name):
     return pd.qcut(s, 3, labels=[f"{name}: low", f"{name}: mid", f"{name}: high"], duplicates="drop")
 
 
-def main():
+def build_results():
     os.makedirs(OUT_DIR, exist_ok=True)
     os.makedirs(FIG_DIR, exist_ok=True)
     d = prepare(load_facility(), pac_fill=PAC)
@@ -73,12 +78,11 @@ def main():
     yA, yD = s["alos_days"].to_numpy(float), s["i_019_02_dtc_rs_rate"].to_numpy(float)
     bA, bD = lstsq(X, yA), lstsq(X, yD)
     s["alos_expected"], s["dtc_expected"] = X @ bA, X @ bD
-    s["oe_alos"] = s["alos_days"] / s["alos_expected"]
-    s["dtc_residual"] = s["i_019_02_dtc_rs_rate"] - s["dtc_expected"]
+    s["oe_alos"], s["dtc_residual"] = components(yA, yD, s["alos_expected"], s["dtc_expected"])
     q = np.percentile(s["dtc_residual"], DTC_PCT)
     s["flag"] = (s["oe_alos"] >= RATIO) & (s["dtc_residual"] <= q)
-    out(f"R-squared of the expected-value models: ALOS {1 - ((yA - X @ bA) ** 2).sum() / ((yA - yA.mean()) ** 2).sum():.2f}, "
-        f"DTC {1 - ((yD - X @ bD) ** 2).sum() / ((yD - yD.mean()) ** 2).sum():.2f}")
+    out(f"R-squared of the expected-value models: ALOS {r_squared(yA, X @ bA):.2f}, "
+        f"DTC {r_squared(yD, X @ bD):.2f}")
     out(f"Primary rule: O/E ALOS >= {RATIO:.2f} and DTC residual <= {q:.1f} points (the {DTC_PCT}th percentile) "
         f"-> {int(s['flag'].sum())} facilities flagged ({100 * s['flag'].mean():.1f}%)")
 
@@ -88,14 +92,22 @@ def main():
     counts = np.zeros(n)
     for _ in range(B):
         idx = rng.integers(0, n, n)
-        eA, eD = X @ lstsq(X[idx], yA[idx]), X @ lstsq(X[idx], yD[idx])
-        res = yD - eD
-        counts += (yA / eA >= RATIO) & (res <= np.percentile(res, DTC_PCT))
+        try:
+            eA, eD = X @ lstsq(X[idx], yA[idx]), X @ lstsq(X[idx], yD[idx])
+            ratio, res = components(yA, yD, eA, eD)
+        except (ValueError, np.linalg.LinAlgError) as exc:
+            raise ValueError(f"Screening bootstrap draw {_ + 1}/{B} failed: {exc}") from exc
+        counts += (ratio >= RATIO) & (res <= np.percentile(res, DTC_PCT))
     s["flag_frequency"] = counts / B
     s["robust_flag"] = s["flag_frequency"] >= ROBUST_SHARE
-    out(f"Bootstrap ({B} refits): {int(s['robust_flag'].sum())} of the {int(s['flag'].sum())} flagged facilities are "
-        f"flagged in at least {int(100 * ROBUST_SHARE)}% of refits (robust); "
-        f"{int(((s['flag_frequency'] > 0) & ~s['flag']).sum())} unflagged facilities are flagged in some refits.")
+    out(f"Bootstrap ({B} refits): {int(s['robust_flag'].sum())} facilities have flag frequency "
+        f">= {int(100 * ROBUST_SHARE)}% (legacy robust_flag); "
+        f"{int((s['flag'] & s['robust_flag']).sum())} also meet the original primary rule; "
+        f"{int((~s['flag'] & s['robust_flag']).sum())} do not meet the original primary rule. "
+        f"{int(((s['flag_frequency'] > 0) & ~s['flag']).sum())} primary-unflagged facilities are flagged in some refits.")
+    out("Refit frequency holds each original facility's observed outcomes fixed; expected values and the "
+        "DTC-residual percentile cutoff are recalculated in each refit. It is not a probability of poor care, "
+        "an outcome uncertainty interval, or external validation.")
 
     # ---- sensitivity grid
     rows = []
@@ -118,7 +130,8 @@ def main():
         out(f"Funnel-plot readmission outliers (above the adjusted 99.8% limit): {int(m['above_99_8'].fillna(False).sum())} facilities; "
             f"{int((m['flag'] & m['above_99_8'].fillna(False)).sum())} of them are also flagged by this screen.")
     else:
-        out("(run 04_analysis.py first to compare with the funnel-plot outliers)")
+        out("(run 04_analysis.py" + (" --as-planned" if AS_PLANNED else "")
+            + " first to compare with the matching-version funnel-plot outliers)")
     if "review_flag" in s.columns:
         old = s["review_flag"].eq("Priority for Review")
         out(f"Earlier peer-median rule (review_flag in 01): {int(old.sum())} facilities; "
@@ -139,7 +152,7 @@ def main():
         t["robust_rate_%"] = (100 * t["robust"] / t["facilities"]).round(1)
         fr.append(t)
     fairness = pd.concat(fr, ignore_index=True)
-    out("\n=== Flag rates by group (a large imbalance means the screen is not neutral across these groups) ===")
+    out("\n=== Descriptive flag rates by group (differences alone do not establish bias or fairness) ===")
     out(fairness.to_string(index=False))
 
     # ---- outputs
@@ -160,7 +173,7 @@ def main():
     f1 = s[s["flag"] & ~s["robust_flag"]]
     f2 = s[s["robust_flag"]]
     ax.scatter(f1["oe_alos"], f1["dtc_residual"], s=22, c="C1", label=f"flagged ({len(f1)})")
-    ax.scatter(f2["oe_alos"], f2["dtc_residual"], s=28, c="C3", label=f"flagged and robust ({len(f2)})")
+    ax.scatter(f2["oe_alos"], f2["dtc_residual"], s=28, c="C3", label=f"refit frequency >= {int(100 * ROBUST_SHARE)}% ({len(f2)})")
     ax.axvline(RATIO, color="k", ls="--", lw=1)
     ax.axhline(q, color="k", ls="--", lw=1)
     ax.set_xlabel("Observed / expected ALOS (expected from case mix only)")
@@ -175,6 +188,34 @@ def main():
     with open(f"{OUT_DIR}/screening_summary.txt", "w", encoding="utf-8") as fh:
         fh.write(buf.getvalue())
     print(f"\nSaved to {OUT_DIR}/ and {FIG_DIR}/screening_scatter.png")
+
+
+def main():
+    global OUT_DIR, FIG_DIR
+    args = sys.argv[1:]
+    if any(arg not in ('--as-planned', '--show-current') for arg in args) or len(args) != len(set(args)):
+        raise SystemExit('Usage: python src/05_screening.py [--as-planned] [--show-current]')
+    root = Path(OUT_DIR)
+    if '--show-current' in args:
+        print(current_screen_dir(root))
+        return
+    inputs = [Path(p) for p in ['data/processed/irf_analytics.db', 'src/05_screening.py',
+              'src/irf_common.py', 'src/screening_guards.py', 'src/screening_publication.py',
+              'src/model_publication.py']]
+    funnel_present = Path(FUNNEL_PATH).exists()
+    if funnel_present:
+        inputs.append(Path(FUNNEL_PATH))
+    old_out, old_fig = OUT_DIR, FIG_DIR
+    try:
+        with publish_batch(root, REQUIRED, inputs) as stage:
+            OUT_DIR = FIG_DIR = str(stage)
+            build_results()
+            if Path(FUNNEL_PATH).exists() != funnel_present:
+                raise RuntimeError('Funnel input availability changed during screening')
+            validate_screen_files(stage)
+    finally:
+        OUT_DIR, FIG_DIR = old_out, old_fig
+    print('Published complete screening batch:', current_screen_dir(root))
 
 
 if __name__ == "__main__":

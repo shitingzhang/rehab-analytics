@@ -7,7 +7,10 @@
 --           facility-level associations, not patient-level causal effects.
 -- =============================================================================
 
--- Query 01: Facility benchmark by ownership type and setting (hospital-based unit vs free-standing)
+-- Query 01: Descriptive facility means by ownership and setting (actual Medicare payment)
+-- Payment: unweighted mean of non-NULL facility medicare_pay_per_stay values,
+-- not std_pay_per_stay, pooled national payment per stay, provider costs or charges.
+-- Retained mean_pay_per_stay aliases follow this definition in Queries 01 and 04.
 SELECT
     COALESCE(ownership_type, 'Unknown') AS ownership_type,
     CASE is_unit_ccn WHEN 1 THEN 'Hospital-based unit' WHEN 0 THEN 'Free-standing / other' ELSE 'Unknown' END AS setting,
@@ -47,7 +50,10 @@ FROM tiers
 GROUP BY stroke_tertile
 ORDER BY stroke_tertile;
 
--- Query 03: Therapy intensity quartile (PT+OT+SLP minutes per covered day) versus outcomes and cost
+-- Query 03: Legacy recorded-minutes quartiles, outcomes and actual Medicare payment
+-- This historical ratio is not accurate daily therapy intensity (see the data dictionary).
+-- avg_pay_per_stay is the unweighted mean of actual Medicare payment per stay;
+-- the current mode/mix regression uses the separate standardized payment field.
 WITH ranked AS (
     SELECT *, NTILE(4) OVER (ORDER BY therapy_min_per_day) AS therapy_quartile
     FROM facility
@@ -66,11 +72,17 @@ FROM ranked
 GROUP BY therapy_quartile
 ORDER BY therapy_quartile;
 
--- Query 04: State-level performance and ranking (states with at least 5 facilities)
+-- Query 04: Descriptive state summaries and DTC ranking (actual payment; >=5 total facilities)
+-- Payment is actual Medicare payment, not standardized payment. The existing rank
+-- uses rounded DTC means; >=5 refers to all facilities, not each outcome's valid n.
+-- Valid-outcome counts are shown separately; neither is an additional filter.
+-- This retained rounded-mean rank has no uncertainty adjustment and is not a quality grade.
 WITH state_stats AS (
     SELECT
         state,
         COUNT(*) AS facilities,
+        COUNT(i_019_02_dtc_rs_rate) AS facilities_with_dtc,
+        COUNT(i_017_01_ppr_pd_rsrr) AS facilities_with_rsrr,
         SUM(tot_epsd_stay_cnt) AS medicare_ffs_stays,
         ROUND(AVG(alos_days), 1) AS mean_alos_days,
         ROUND(AVG(i_019_02_dtc_rs_rate), 1) AS mean_dtc_rs_rate,
@@ -83,7 +95,8 @@ WITH state_stats AS (
 )
 SELECT
     RANK() OVER (ORDER BY mean_dtc_rs_rate DESC) AS dtc_rank,
-    state, facilities, medicare_ffs_stays, mean_alos_days,
+    state, facilities, facilities_with_dtc, facilities_with_rsrr,
+    medicare_ffs_stays, mean_alos_days,
     mean_dtc_rs_rate, mean_readmit_rsrr, mean_pay_per_stay
 FROM state_stats
 ORDER BY dtc_rank;
@@ -101,7 +114,12 @@ FROM facility
 GROUP BY review_flag
 ORDER BY CASE review_flag WHEN 'Priority for Review' THEN 1 WHEN 'Standard' THEN 2 ELSE 3 END;
 
--- Query 06: Readmission versus the all-facility mean, using the 95% confidence interval of each facility
+-- Query 06: Facility RSRR intervals versus the sample mean (not CMS national classification)
+-- AVG uses non-NULL RSRR in this joined facility table, with equal facility weights.
+-- Legacy aliases clearly_worse/better mean lower CI > sample mean / upper CI < sample mean.
+-- These are descriptive interval comparisons, not CMS COMP_PERF labels or clinical judgments.
+-- The sample mean is treated as fixed; no benchmark-uncertainty or multiplicity adjustment.
+-- facilities_with_rsrr counts non-NULL point estimates, not necessarily complete intervals.
 WITH bench AS (
     SELECT AVG(i_017_01_ppr_pd_rsrr) AS mean_rsrr FROM facility
 )

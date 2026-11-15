@@ -3,6 +3,8 @@
 .ipynb_checkpoints/
 .venv/
 CLAUDE.md
+AGENTS.md
+.local_history/
 
 # Facility-level files that carry a screen / outlier / review flag (plan v1.3: publish aggregates only).
 # Regenerate locally with 02 -> 03 -> 05 -> 06.
@@ -11,3 +13,60 @@ data/processed/irf_analytics.db
 data/processed/screening*/priority_review_list.csv
 data/processed/screening*/screen_all_facilities.csv
 data/processed/analysis*/funnel_flags.csv
+
+# Post-audit cohort and membership carry facility identifiers / legacy flags.
+data/processed/mode_mix_post_audit/cohort_private.csv
+data/processed/mode_mix_post_audit/model_membership_private.csv
+data/processed/mode_mix_post_audit/mode_mix_private.db
+data/processed/linkage_sensitivity/membership_private.csv
+
+# Interrupted database builds may contain facility-level records.
+data/processed/.db-build-*/
+sql/.schema-build-*/
+
+# SQL publication attempts/batches are generated locally; root CSVs are legacy snapshots.
+data/processed/sql_outputs/runs/
+data/processed/sql_outputs/run_status.json
+data/processed/sql_outputs/.staging-*/
+data/processed/sql_outputs/.status-*/
+data/processed/sql_outputs/.writer.lock
+
+# Versioned current-model batches may contain facility-level records, including failed attempts.
+data/processed/mode_mix_post_audit/runs/
+data/processed/mode_mix_post_audit/.staging-*/
+data/processed/mode_mix_post_audit/.status-*/
+data/processed/mode_mix_post_audit/.writer.lock
+data/processed/mode_mix_post_audit/run_status.json
+data/processed/linkage_sensitivity/runs/
+data/processed/linkage_sensitivity/.staging-*/
+data/processed/linkage_sensitivity/.status-*/
+data/processed/linkage_sensitivity/.writer.lock
+data/processed/linkage_sensitivity/run_status.json
+
+# Screening batches include private facility lists; keep all generated attempts local.
+data/processed/screening*/runs/
+data/processed/screening*/.staging-*/
+data/processed/screening*/.status-*/
+data/processed/screening*/run_status.json
+data/processed/screening*/.writer.lock
+
+# Generated comparison batches and interrupted attempts.
+data/processed/comparison/runs/
+data/processed/comparison/.staging-*/
+data/processed/comparison/.status-*/
+data/processed/comparison/run_status.json
+data/processed/comparison/.writer.lock
+
+# Historical S9 supplement: generated batches include private facility membership.
+data/processed/s9_value_tertiles/runs/
+data/processed/s9_value_tertiles/.staging-*/
+data/processed/s9_value_tertiles/.status-*/
+data/processed/s9_value_tertiles/run_status.json
+data/processed/s9_value_tertiles/.writer.lock
+data/processed/s9_value_tertiles/membership_private.csv
+
+# Generated local source-chain receipts and interrupted writes.
+data/processed/clean_provenance.json
+data/processed/database_provenance.json
+data/processed/.source-chain.lock
+data/processed/.provenance-*/

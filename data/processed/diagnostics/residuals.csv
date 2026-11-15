@@ -1,0 +1,4 @@
+outcome,n,skewness,excess_kurtosis,max_cooks_d,n_cooks_gt_4_over_n,n_leverage_1_kept
+DTC,1063,-0.2803,1.2447,0.0413,79,2
+RSRR,1063,0.1402,-0.022,0.0356,62,2
+PAY,1065,3.1404,18.6888,0.1348,61,2

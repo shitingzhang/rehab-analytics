@@ -149,52 +149,52 @@ Impairment: hip or knee replacement amputation or other bone or joint condition 
                                                                       log(Medicare stays) -0.489  -0.858   -0.121 0.010
 
 === Sensitivity analyses: dose coefficient ===
-outcome                                                 analysis    n   coef  ci_low  ci_high
-    DTC                               S1 weighted by cases (WLS) 1063  0.024  -0.157    0.204
-    DTC                       S2 state-clustered SE, no state FE 1063 -0.131  -0.275    0.014
-    DTC                 S3 trim top/bottom 1% (dose and outcome) 1021 -0.042  -0.194    0.110
-    DTC                 S4a at most 1 suppressed impairment cell  710 -0.029  -0.228    0.170
-    DTC                       S4b suppressed cells filled with 0 1059 -0.055  -0.224    0.114
-    DTC                      S4b suppressed cells filled with 10 1063 -0.072  -0.234    0.090
-    DTC                           S5a free-standing / other only  381  0.197  -0.112    0.506
-    DTC                            S5b hospital-based units only  682 -0.169  -0.342    0.004
-    DTC             S6a quadratic dose: linear term at mean dose 1063  0.022  -0.151    0.194
-    DTC           S10 as planned (v1.2): complete cases, no fill  539 -0.084  -0.260    0.091
-    DTC  S11 suppressed dual / rural filled with 1 beneficiaries 1063 -0.066  -0.230    0.097
-    DTC S11 suppressed dual / rural filled with 10 beneficiaries 1063 -0.068  -0.234    0.097
-    DTC                           S12 without rural % and dual % 1063 -0.062  -0.229    0.104
-    DTC              S13 excluding low-confidence facility links 1031 -0.059  -0.238    0.120
-    DTC                          S8 dose x ownership interaction 1063 -0.122  -0.340    0.095
-   RSRR                               S1 weighted by cases (WLS) 1063  0.009  -0.022    0.040
-   RSRR                       S2 state-clustered SE, no state FE 1063  0.033   0.009    0.056
-   RSRR                 S3 trim top/bottom 1% (dose and outcome) 1019  0.019  -0.002    0.040
-   RSRR                 S4a at most 1 suppressed impairment cell  710  0.023  -0.009    0.054
-   RSRR                       S4b suppressed cells filled with 0 1059  0.024  -0.002    0.051
-   RSRR                      S4b suppressed cells filled with 10 1063  0.023  -0.004    0.049
-   RSRR                           S5a free-standing / other only  381 -0.012  -0.064    0.039
-   RSRR                            S5b hospital-based units only  682  0.029  -0.001    0.059
-   RSRR             S6a quadratic dose: linear term at mean dose 1063  0.020  -0.013    0.053
-   RSRR           S10 as planned (v1.2): complete cases, no fill  539  0.011  -0.020    0.042
-   RSRR  S11 suppressed dual / rural filled with 1 beneficiaries 1063  0.023  -0.004    0.050
-   RSRR S11 suppressed dual / rural filled with 10 beneficiaries 1063  0.023  -0.004    0.050
-   RSRR                           S12 without rural % and dual % 1063  0.024  -0.002    0.051
-   RSRR              S13 excluding low-confidence facility links 1031  0.019  -0.009    0.047
-   RSRR                          S8 dose x ownership interaction 1063  0.009  -0.025    0.043
-    PAY                               S1 weighted by cases (WLS) 1065 -0.222  -0.345   -0.100
-    PAY                       S2 state-clustered SE, no state FE 1065 -0.281  -0.405   -0.157
-    PAY                 S3 trim top/bottom 1% (dose and outcome) 1021 -0.214  -0.338   -0.091
-    PAY                 S4a at most 1 suppressed impairment cell  710 -0.252  -0.375   -0.129
-    PAY                       S4b suppressed cells filled with 0 1060 -0.270  -0.390   -0.149
-    PAY                      S4b suppressed cells filled with 10 1065 -0.285  -0.409   -0.162
-    PAY                           S5a free-standing / other only  382 -0.216  -0.397   -0.034
-    PAY                            S5b hospital-based units only  683 -0.284  -0.440   -0.128
-    PAY             S6a quadratic dose: linear term at mean dose 1065 -0.345  -0.510   -0.180
-    PAY           S10 as planned (v1.2): complete cases, no fill  539 -0.253  -0.423   -0.083
-    PAY  S11 suppressed dual / rural filled with 1 beneficiaries 1065 -0.277  -0.401   -0.154
-    PAY S11 suppressed dual / rural filled with 10 beneficiaries 1065 -0.278  -0.401   -0.154
-    PAY                           S12 without rural % and dual % 1065 -0.274  -0.396   -0.153
-    PAY              S13 excluding low-confidence facility links 1033 -0.268  -0.397   -0.139
-    PAY                          S8 dose x ownership interaction 1065 -0.298  -0.457   -0.138
+outcome                                                     analysis    n   coef  ci_low  ci_high
+    DTC                                   S1 weighted by cases (WLS) 1063  0.024  -0.157    0.204
+    DTC                           S2 state-clustered SE, no state FE 1063 -0.131  -0.275    0.014
+    DTC                     S3 trim top/bottom 1% (dose and outcome) 1021 -0.042  -0.194    0.110
+    DTC                     S4a at most 1 suppressed impairment cell  710 -0.029  -0.228    0.170
+    DTC                           S4b suppressed cells filled with 0 1059 -0.055  -0.224    0.114
+    DTC                          S4b suppressed cells filled with 10 1063 -0.072  -0.234    0.090
+    DTC                               S5a free-standing / other only  381  0.197  -0.112    0.506
+    DTC                                S5b hospital-based units only  682 -0.169  -0.342    0.004
+    DTC                 S6a quadratic dose: linear term at mean dose 1063  0.022  -0.151    0.194
+    DTC               S10 as planned (v1.2): complete cases, no fill  539 -0.084  -0.260    0.091
+    DTC      S11 suppressed dual / rural filled with 1 beneficiaries 1063 -0.066  -0.230    0.097
+    DTC     S11 suppressed dual / rural filled with 10 beneficiaries 1063 -0.068  -0.234    0.097
+    DTC                               S12 without rural % and dual % 1063 -0.062  -0.229    0.104
+    DTC                  S13 excluding low-confidence facility links 1031 -0.059  -0.238    0.120
+    DTC S8 reference-group dose slope (non-profit / physician-owned) 1063 -0.122  -0.340    0.095
+   RSRR                                   S1 weighted by cases (WLS) 1063  0.009  -0.022    0.040
+   RSRR                           S2 state-clustered SE, no state FE 1063  0.033   0.009    0.056
+   RSRR                     S3 trim top/bottom 1% (dose and outcome) 1019  0.019  -0.002    0.040
+   RSRR                     S4a at most 1 suppressed impairment cell  710  0.023  -0.009    0.054
+   RSRR                           S4b suppressed cells filled with 0 1059  0.024  -0.002    0.051
+   RSRR                          S4b suppressed cells filled with 10 1063  0.023  -0.004    0.049
+   RSRR                               S5a free-standing / other only  381 -0.012  -0.064    0.039
+   RSRR                                S5b hospital-based units only  682  0.029  -0.001    0.059
+   RSRR                 S6a quadratic dose: linear term at mean dose 1063  0.020  -0.013    0.053
+   RSRR               S10 as planned (v1.2): complete cases, no fill  539  0.011  -0.020    0.042
+   RSRR      S11 suppressed dual / rural filled with 1 beneficiaries 1063  0.023  -0.004    0.050
+   RSRR     S11 suppressed dual / rural filled with 10 beneficiaries 1063  0.023  -0.004    0.050
+   RSRR                               S12 without rural % and dual % 1063  0.024  -0.002    0.051
+   RSRR                  S13 excluding low-confidence facility links 1031  0.019  -0.009    0.047
+   RSRR S8 reference-group dose slope (non-profit / physician-owned) 1063  0.009  -0.025    0.043
+    PAY                                   S1 weighted by cases (WLS) 1065 -0.222  -0.345   -0.100
+    PAY                           S2 state-clustered SE, no state FE 1065 -0.281  -0.405   -0.157
+    PAY                     S3 trim top/bottom 1% (dose and outcome) 1021 -0.214  -0.338   -0.091
+    PAY                     S4a at most 1 suppressed impairment cell  710 -0.252  -0.375   -0.129
+    PAY                           S4b suppressed cells filled with 0 1060 -0.270  -0.390   -0.149
+    PAY                          S4b suppressed cells filled with 10 1065 -0.285  -0.409   -0.162
+    PAY                               S5a free-standing / other only  382 -0.216  -0.397   -0.034
+    PAY                                S5b hospital-based units only  683 -0.284  -0.440   -0.128
+    PAY                 S6a quadratic dose: linear term at mean dose 1065 -0.345  -0.510   -0.180
+    PAY               S10 as planned (v1.2): complete cases, no fill  539 -0.253  -0.423   -0.083
+    PAY      S11 suppressed dual / rural filled with 1 beneficiaries 1065 -0.277  -0.401   -0.154
+    PAY     S11 suppressed dual / rural filled with 10 beneficiaries 1065 -0.278  -0.401   -0.154
+    PAY                               S12 without rural % and dual % 1065 -0.274  -0.396   -0.153
+    PAY                  S13 excluding low-confidence facility links 1033 -0.268  -0.397   -0.139
+    PAY S8 reference-group dose slope (non-profit / physician-owned) 1065 -0.298  -0.457   -0.138
 
 === Sensitivity analyses: non-linearity (S6), skew of group share (S9), dose x ownership interaction (S8) ===
 outcome                                             analysis              term   coef  ci_low  ci_high     p

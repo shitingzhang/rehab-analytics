@@ -1,0 +1,70 @@
+term,label,vif,outcome
+therapy10,Therapy dose (+10 min/day),1.113,DTC
+group10,Group/concurrent share (+10 pts),1.763,DTC
+cotreat5,Co-treatment share (+5 pts),1.06,DTC
+pt5,PT share of minutes (+5 pts),2.463,DTC
+slp5,SLP share of minutes (+5 pts),2.614,DTC
+for_profit,For-profit (vs non-profit),1.675,DTC
+government,Government (vs non-profit),1.135,DTC
+physician,Physician-owned (vs non-profit),1.048,DTC
+unit,Hospital-based unit (vs free-standing),2.862,DTC
+risk,HCC risk score (+1),1.59,DTC
+age,Mean age (+1 yr),1.9,DTC
+dual10,Dual-eligible % (+10 pts),1.677,DTC
+rural10,Rural % (+10 pts),1.235,DTC
+dual_suppressed,Dual-eligible % suppressed (filled),1.635,DTC
+rural_suppressed,Rural % suppressed (filled),1.172,DTC
+imp10_brain_disease_or_condition_non_traumatic,Impairment: brain disease or condition non traumatic (+10 pts),1.606,DTC
+imp10_brain_injury_traumatic,Impairment: brain injury traumatic (+10 pts),1.365,DTC
+imp10_hip_or_femur_fracture,Impairment: hip or femur fracture (+10 pts),2.438,DTC
+imp10_hip_or_knee_replacement_amputation_or_other_bone_or_joint_condition,Impairment: hip or knee replacement amputation or other bone or joint condition (+10 pts),1.856,DTC
+imp10_nervous_system_disorder_excluding_stroke,Impairment: nervous system disorder excluding stroke (+10 pts),2.255,DTC
+imp10_spinal_cord_any,Impairment: spinal cord any (+10 pts),1.717,DTC
+imp10_stroke,Impairment: stroke (+10 pts),2.447,DTC
+log_stays,log(Medicare stays),3.02,DTC
+therapy10,Therapy dose (+10 min/day),1.113,RSRR
+group10,Group/concurrent share (+10 pts),1.763,RSRR
+cotreat5,Co-treatment share (+5 pts),1.06,RSRR
+pt5,PT share of minutes (+5 pts),2.463,RSRR
+slp5,SLP share of minutes (+5 pts),2.614,RSRR
+for_profit,For-profit (vs non-profit),1.675,RSRR
+government,Government (vs non-profit),1.135,RSRR
+physician,Physician-owned (vs non-profit),1.048,RSRR
+unit,Hospital-based unit (vs free-standing),2.862,RSRR
+risk,HCC risk score (+1),1.59,RSRR
+age,Mean age (+1 yr),1.9,RSRR
+dual10,Dual-eligible % (+10 pts),1.677,RSRR
+rural10,Rural % (+10 pts),1.235,RSRR
+dual_suppressed,Dual-eligible % suppressed (filled),1.635,RSRR
+rural_suppressed,Rural % suppressed (filled),1.172,RSRR
+imp10_brain_disease_or_condition_non_traumatic,Impairment: brain disease or condition non traumatic (+10 pts),1.606,RSRR
+imp10_brain_injury_traumatic,Impairment: brain injury traumatic (+10 pts),1.365,RSRR
+imp10_hip_or_femur_fracture,Impairment: hip or femur fracture (+10 pts),2.438,RSRR
+imp10_hip_or_knee_replacement_amputation_or_other_bone_or_joint_condition,Impairment: hip or knee replacement amputation or other bone or joint condition (+10 pts),1.856,RSRR
+imp10_nervous_system_disorder_excluding_stroke,Impairment: nervous system disorder excluding stroke (+10 pts),2.255,RSRR
+imp10_spinal_cord_any,Impairment: spinal cord any (+10 pts),1.717,RSRR
+imp10_stroke,Impairment: stroke (+10 pts),2.447,RSRR
+log_stays,log(Medicare stays),3.02,RSRR
+therapy10,Therapy dose (+10 min/day),1.111,PAY
+group10,Group/concurrent share (+10 pts),1.756,PAY
+cotreat5,Co-treatment share (+5 pts),1.059,PAY
+pt5,PT share of minutes (+5 pts),2.484,PAY
+slp5,SLP share of minutes (+5 pts),2.639,PAY
+for_profit,For-profit (vs non-profit),1.67,PAY
+government,Government (vs non-profit),1.135,PAY
+physician,Physician-owned (vs non-profit),1.048,PAY
+unit,Hospital-based unit (vs free-standing),2.868,PAY
+risk,HCC risk score (+1),1.588,PAY
+age,Mean age (+1 yr),1.855,PAY
+dual10,Dual-eligible % (+10 pts),1.654,PAY
+rural10,Rural % (+10 pts),1.235,PAY
+dual_suppressed,Dual-eligible % suppressed (filled),1.647,PAY
+rural_suppressed,Rural % suppressed (filled),1.172,PAY
+imp10_brain_disease_or_condition_non_traumatic,Impairment: brain disease or condition non traumatic (+10 pts),1.605,PAY
+imp10_brain_injury_traumatic,Impairment: brain injury traumatic (+10 pts),1.361,PAY
+imp10_hip_or_femur_fracture,Impairment: hip or femur fracture (+10 pts),2.429,PAY
+imp10_hip_or_knee_replacement_amputation_or_other_bone_or_joint_condition,Impairment: hip or knee replacement amputation or other bone or joint condition (+10 pts),1.854,PAY
+imp10_nervous_system_disorder_excluding_stroke,Impairment: nervous system disorder excluding stroke (+10 pts),2.246,PAY
+imp10_spinal_cord_any,Impairment: spinal cord any (+10 pts),1.716,PAY
+imp10_stroke,Impairment: stroke (+10 pts),2.452,PAY
+log_stays,log(Medicare stays),3.038,PAY

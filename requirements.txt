@@ -2,4 +2,4 @@ pandas==3.0.6
 numpy==2.5.3
 scipy==1.18.1
 matplotlib==3.11.2
-statsmodels==0.15.0  # only for the optional cross-check: python src/04_analysis.py --check
+statsmodels==0.15.0  # used by the step 04 cross-check and step 07 diagnostics

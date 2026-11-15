@@ -141,13 +141,13 @@ def run_outcome(d, key, sd_min):
             tab = fit(alt, ycol, primary_terms, True)[0]
             sens.append(row(key, f"S11 suppressed dual / rural filled with {v} beneficiaries", "therapy10", len(alt), tab))
             tab = tab.reset_index()   # all terms kept: fill sensitivity of the exploratory coefficients (06)
-            tab[~tab["term"].str.startswith("st_")].round(4).to_csv(f"{OUT_DIR}/s11_fill{v}_model_{key.lower()}.csv",
+            tab[~tab["term"].str.startswith("st_")].to_csv(f"{OUT_DIR}/s11_fill{v}_model_{key.lower()}.csv",
                                                                      index=False)
         terms_nodr = [t for t in terms_v12 if t not in ("dual10", "rural10")]
         tab = fit(s, ycol, terms_nodr, True)[0]
         sens.append(row(key, "S12 without rural % and dual %", "therapy10", len(s), tab))
         tab = tab.reset_index()   # all terms kept for the three-version comparison (06)
-        tab[~tab["term"].str.startswith("st_")].round(4).to_csv(f"{OUT_DIR}/s12_model_{key.lower()}.csv", index=False)
+        tab[~tab["term"].str.startswith("st_")].to_csv(f"{OUT_DIR}/s12_model_{key.lower()}.csv", index=False)
         if os.path.exists(LINKAGE_PATH):   # S13: drop low-confidence and rule-resolved facility links (check_linkage.py)
             lk = pd.read_csv(LINKAGE_PATH, dtype={"ccn": str})
             drop = set(lk.loc[lk["low_confidence"] | lk["link"].eq("crosswalk: ambiguous_resolved"), "ccn"])
@@ -155,11 +155,13 @@ def run_outcome(d, key, sd_min):
             sens.append(row(key, "S13 excluding low-confidence facility links", "therapy10", int(k.sum()),
                             fit(s[k], ycol, primary_terms, True)[0]))
         else:
-            out("    S13 skipped: run src/check_linkage.py first.")
+            raise FileNotFoundError("S13 requires src/check_linkage.py outputs; run it first.")
     sx = s.assign(dose_x_for_profit=s["therapy10"] * s["for_profit"], dose_x_government=s["therapy10"] * s["government"])
     tab = fit(sx, ycol, primary_terms + ["dose_x_for_profit", "dose_x_government"], True)[0]
     for t in ("therapy10", "dose_x_for_profit", "dose_x_government"):
-        sens.append(row(key, "S8 dose x ownership interaction", t, len(s), tab))
+        description = ("S8 reference-group dose slope (non-profit / physician-owned)" if t == "therapy10"
+                       else "S8 dose x ownership interaction")
+        sens.append(row(key, description, t, len(s), tab))
     loso = pd.DataFrame([{"outcome": key, "state_left_out": st,
                           "coef": fit(s[s["state"] != st], ycol, primary_terms, True)[0].loc["therapy10", "coef"]}
                          for st in sorted(s["state"].unique())])
@@ -173,8 +175,10 @@ def run_outcome(d, key, sd_min):
             b, se_, _, _ = ols_cluster(s[ycol], X, s["state"])
             out(f"    statsmodels cross-check: max |coef diff| = {np.abs(np.asarray(res.params) - b).max():.2e}, "
                 f"max |SE diff| = {np.abs(np.asarray(res.bse) - se_).max():.2e}")
+            if max(np.abs(np.asarray(res.params) - b).max(), np.abs(np.asarray(res.bse) - se_).max()) >= 1e-6:
+                raise RuntimeError("statsmodels cross-check exceeded the pre-specified 1e-6 tolerance")
         except Exception as e:
-            out(f"    statsmodels cross-check not run: {e}")
+            raise RuntimeError(f"Required statsmodels cross-check failed: {e}") from e
     return pd.DataFrame(ladder), full, pd.DataFrame(sens), loso, len(s)
 
 
@@ -200,22 +204,22 @@ def funnel(d):
     summ = f.groupby("ownership_type").agg(facilities=(y, "size"), mean_rsrr=(y, "mean"), above_99_8=("above_99_8", "sum"),
                                            below_99_8=("below_99_8", "sum"), above_95=("above_95", "sum")).reset_index()
     summ["pct_above_99_8"] = (100 * summ["above_99_8"] / summ["facilities"]).round(1)
-    k = float(np.median(f["se"] * np.sqrt(f[v])))
-    grid = np.linspace(f[v].min(), f[v].max(), 300)
-    fig, ax = plt.subplots(figsize=(8, 5.5))
+    fig, ax = plt.subplots(figsize=(8.5, 5.8))
     for name, g in f.groupby("ownership_type"):
-        ax.scatter(g[v], g[y], s=14, alpha=0.65, label=f"{name} (n={len(g)})")
-    for zl, ls in [(1.96, "--"), (3.09, ":")]:
-        half = zl * np.sqrt((k / np.sqrt(grid)) ** 2 + tau2)
-        ax.plot(grid, center + half, "k" + ls, lw=1, label=("95% limits" if zl == 1.96 else "99.8% limits"))
-        ax.plot(grid, center - half, "k" + ls, lw=1)
-    ax.axhline(center, color="k", lw=0.8)
+        ax.scatter(g[v], g["z_adj"], s=14, alpha=0.65, label=f"{name} (n={len(g)})")
+    for cutoff, style in [(1.96, "--"), (3.09, ":")]:
+        ax.axhline(cutoff, color="black", linestyle=style, lw=1,
+                   label=f"Historical rule: +/-{cutoff}")
+        ax.axhline(-cutoff, color="black", linestyle=style, lw=1)
+    ax.axhline(0, color="gray", lw=0.8)
     ax.set_xlabel("Cases behind the rate (facility volume)")
-    ax.set_ylabel("Risk-standardised readmission rate (%)")
-    ax.set_title(f"Funnel plot: 30-day potentially preventable readmission (tau = {np.sqrt(tau2):.2f} pts)")
+    ax.set_ylabel("Standardized deviation used by historical flags (z_adj)")
+    ax.set_title("Historical readmission rule: plot aligned with saved flags")
     ax.legend(fontsize=8)
-    fig.tight_layout()
-    fig.savefig(f"{FIG_DIR}/funnel_readmission.png", dpi=150)
+    fig.text(0.5, 0.02, "Method demonstration only; validity for CMS risk-standardized rates is not established.",
+             ha="center", fontsize=8)
+    fig.tight_layout(rect=(0, 0.05, 1, 1))
+    fig.savefig(f"{FIG_DIR}/readmission_rule_alignment.png", dpi=150)
     plt.close(fig)
     return f, summ
 
@@ -279,12 +283,12 @@ def main():
 
     prim = ladder[ladder["analysis"].str.startswith("P")].copy()
     prim["p_holm"] = holm(prim["p"].to_numpy())
-    ladder.round(4).to_csv(f"{OUT_DIR}/dose_ladder.csv", index=False)
-    prim.round(4).to_csv(f"{OUT_DIR}/dose_primary_holm.csv", index=False)
-    sens.round(4).to_csv(f"{OUT_DIR}/sensitivity.csv", index=False)
-    loso.round(4).to_csv(f"{OUT_DIR}/leave_one_state_out.csv", index=False)
+    ladder.to_csv(f"{OUT_DIR}/dose_ladder.csv", index=False)
+    prim.to_csv(f"{OUT_DIR}/dose_primary_holm.csv", index=False)
+    sens.to_csv(f"{OUT_DIR}/sensitivity.csv", index=False)
+    loso.to_csv(f"{OUT_DIR}/leave_one_state_out.csv", index=False)
     for key, full in fulls.items():
-        full[~full["term"].str.startswith("st_")].round(4).to_csv(f"{OUT_DIR}/primary_model_{key.lower()}.csv", index=False)
+        full[~full["term"].str.startswith("st_")].to_csv(f"{OUT_DIR}/primary_model_{key.lower()}.csv", index=False)
     figures(ladder, sens)
 
     out("\n=== CONFIRMATORY: therapy-dose coefficient in the primary model (Holm-adjusted across the outcomes) ===")

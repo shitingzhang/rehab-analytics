@@ -1,122 +1,70 @@
-# Therapy Dose, Mode & Mix in U.S. Inpatient Rehabilitation Facilities
+# Therapy Mode and Discipline Mix in U.S. Inpatient Rehabilitation Facilities
 
-![Python](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)
-![SQLite](https://img.shields.io/badge/SQLite-database-003B57?logo=sqlite&logoColor=white)
-![Data](https://img.shields.io/badge/data-CMS%20public%20files-2E7D32)
-![Analysis](https://img.shields.io/badge/analysis-pre--specified%20plan-6A1B9A)
+This project uses four public CMS datasets to study how rehabilitation therapy is delivered across **1,165 U.S. inpatient rehabilitation facilities (IRFs)**. The outcomes are discharge to the community, risk-standardized readmission, and standardized Medicare payment per stay. The analysis compares facilities, and its estimates describe associations.
 
-> **Does more therapy in inpatient rehabilitation facilities (IRFs) go with better outcomes, or mostly with higher
-> costs?** This project uses public CMS data on about 1,165 U.S. IRFs to study how the amount, mode and mix of therapy
-> relate to discharge to the community, readmission and Medicare payment per stay.
+## Research update
 
-**This repository is published in stages.** This README currently explains **Stage 1: data cleaning and linkage**.
-Later stages will be documented here as they are written up.
+The original analysis studied treatment amount, format, and discipline mix. An audit found that the original dose ratio divided therapy minutes recorded in the first two weeks by covered days across the entire stay. Longer stays can therefore produce a lower ratio even when recorded therapy minutes are the same. The audit also found that the historical case-mix construction used the same fill for unavailable impairment counts and suppressed small counts.
 
-## Why this project
+The current research focuses on the composition of therapy minutes recorded in a common window. It distinguishes suppressed small counts from unavailable counts. In the **938-facility exploratory analysis**, a 10-percentage-point higher group/concurrent share was associated with a **0.904-point higher community-discharge rate** (95% CI 0.513 to 1.295) and a **0.153-point higher readmission rate** (95% CI 0.087 to 0.218). Both associations met the BH criterion in the current 12-comparison family. The measures have different implications for care quality. This focus was selected after earlier results were reviewed. The complete current analysis is maintained in the working project.
 
-I have a rehabilitation background. During a hospital rehab internship in China, I noticed that many patients left
-after about two weeks, even when they were still improving. If time in rehab is limited, how much therapy a patient
-gets, and how it is given, should matter. In the U.S., Medicare pays IRFs a fixed amount per stay and generally expects
-patients to handle about three hours of therapy a day. CMS also publishes facility-level data on therapy minutes and
-outcomes, which makes the question testable.
+## Published workflow
 
-## Research questions
-
-| | Question | Type |
+| Step | Script | What it produces |
 |---|---|---|
-| **RQ-A** | Is a higher daily therapy dose (+10 min/day) associated with discharge to community (primary outcome), readmission and standardized payment per stay? | Confirmatory |
-| **RQ-B** | Holding dose fixed, are group/concurrent share, co-treatment share, discipline mix (PT/OT/SLP) and ownership associated with the outcomes? | Exploratory |
-| **RQ-C** | Can a case-mix-adjusted screen flag facilities with a long length of stay *and* a low discharge-to-community rate? | Method demonstration |
+| 01 | [Clean and link CMS files](src/01_data_quality_cms.py) | Facility crosswalk, cleaning audit, and local analysis inputs |
+| 02 | [Build the SQLite database](src/02_build_database.py) | Validated local database and schema |
+| 03 | [Run descriptive SQL](src/03_execute_sql.py) | Seven [descriptive tables](data/processed/sql_outputs/README.md), including valid outcome counts for state summaries |
+| 04 | [Fit the historical models](src/04_analysis.py) | Original dose ratios, sensitivity analyses, and readmission figures |
+| 05 | [Run the historical screening demonstration](src/05_screening.py) | Aggregate flag counts, group rates, and bootstrap refit frequencies |
+| 07 | [Check the historical models](src/07_model_diagnostics.py) | [Diagnostics report](docs/model_diagnostics.md), VIF, residual plots, and influence checks |
+| 08 | [Draw the historical sample and suppression figures](src/08_figures.py) | Sample flow and missingness patterns |
 
-The questions and methods were written down in an analysis plan before any outcomes were looked at.
+Steps 07 and 08 document the earlier analysis, including the difference between the 539-facility original model and the historical correction for suppressed rural and dual-eligible values. The comparison exporter (06) and the current mode/mix model are part of a later release.
 
-## Roadmap
+![Historical sample flow across the original and revised analyses](reports/figures/sample_flow.png)
 
-| Stage | Content | Status |
-|---|---|---|
-| **1** | **Data cleaning and facility linkage** (`src/01_data_quality_cms.py`) | **Documented below** |
-| 2 | SQLite database and descriptive SQL queries (`src/02`, `src/03`, `sql/`) | Code uploaded; write-up coming |
-| 3 | Main analysis and review screen (`src/04`, `src/05`) | Code uploaded; write-up coming |
-| 4 | Missing-data correction, diagnostics and supplementary checks | Coming |
-| 5 | Power BI dashboard | Coming |
+![Historical suppression patterns for rural and dual-eligible shares](reports/figures/missingness_pattern.png)
 
-## Stage 1 — Data cleaning and linkage
+## Historical results
 
-### Data
+The [original 539-facility results](data/processed/analysis_as_planned/dose_primary_holm.csv) and [historical revised results](data/processed/analysis/dose_primary_holm.csv) are both available. In the historical revised models, the recorded-minutes/covered-day ratio had intervals including zero for community discharge and readmission. A 10-unit higher ratio was associated with about **$278 lower standardized payment per stay** (95% CI $154 to $401 lower). The mismatch between the recording window and denominator limits interpretation of this historical estimate.
 
-| File in `data/raw/` | CMS dataset | Content | Version |
-|---|---|---|---|
-| `pac_irf_by_provider.csv` | Medicare Post-Acute Care Utilization – Inpatient Rehabilitation Facility by Geography and Provider ([data.cms.gov](https://data.cms.gov/provider-summary-by-type-of-service/medicare-post-acute-care-hospice/medicare-post-acute-care-utilization-inpatient-rehabilitation-facility-by-geography-and-provider)) | Stays, covered days, payments, beneficiary mix, therapy minutes by discipline and mode | FY2024, Original Medicare |
-| `irf_provider_data.csv` | Inpatient Rehabilitation Facility – Provider Data ([Provider Data Catalog](https://data.cms.gov/provider-data/topics/inpatient-rehabilitation-facilities)) | Discharge to community, readmission and other quality measures | Sept 2026 refresh |
-| `irf_general_information.csv` | Inpatient Rehabilitation Facility – General Information (same catalog) | Ownership, address | Sept 2026 refresh |
-| `irf_conditions.csv` | Inpatient Rehabilitation Facility – Conditions (same catalog) | Patients by impairment group | Sept 2026 refresh |
+The screening demonstration flagged 4 of 541 facilities under the original specification and 11 of 1,067 under the revised specification. Only 2 flags were shared. Eight revised flags came from facilities newly included in the sample. Bootstrap frequency describes how often a rule is triggered when models are refitted while observed facility outcomes are held fixed. Group-rate differences describe the screened sample. The rule lacks external validation for operational decisions.
 
-These are public U.S. government data. The raw files are not stored in this repository: download the CSV of each
-dataset and save it under the file name above.
+The descriptive SQL reports **actual** Medicare payments. The regression results use **standardized** Medicare payments. The [SQL guide](data/processed/sql_outputs/README.md) explains this distinction and the state-level denominators.
 
-> **Do not open and re-save these files in Excel.** Excel drops the leading zeros of facility IDs, and the files will
-> no longer link.
+## Quick start
 
-### Linking the files
+Use the versions listed below and run from the repository root. Place the four unmodified CMS CSV files under `data/raw/` with these names:
 
-The four files are linked by CMS Certification Number (CCN). Therapy minutes and payments are in the utilization (PAC)
-file; outcomes are in the quality (Provider Data) files.
+| Local file | CMS dataset |
+|---|---|
+| `pac_irf_by_provider.csv` | [Medicare PAC utilization, IRF by geography and provider](https://data.cms.gov/provider-summary-by-type-of-service/medicare-post-acute-care-hospice/medicare-post-acute-care-utilization-inpatient-rehabilitation-facility-by-geography-and-provider), FY2024 |
+| `irf_general_information.csv` | [IRF General Information](https://data.cms.gov/provider-data/topics/inpatient-rehabilitation-facilities), September 2026 refresh |
+| `irf_provider_data.csv` | [IRF Provider Data](https://data.cms.gov/provider-data/topics/inpatient-rehabilitation-facilities), September 2026 refresh |
+| `irf_conditions.csv` | [IRF Conditions](https://data.cms.gov/provider-data/topics/inpatient-rehabilitation-facilities), September 2026 refresh |
 
-- Hospital-based rehab units have a **letter in position 3** of their CCN in the quality files, but a **digit** in the
-  utilization file, so a direct join misses them.
-- A data-driven crosswalk (`data/processed/ccn_crosswalk.csv`) handles this. Of the **810** unit-style CCNs:
-  - **686** map to exactly one PAC provider;
-  - **6** ambiguous ones are resolved by a letter-to-digit rule learned from the unambiguous matches;
-  - **118** have no PAC counterpart (for example, closed, renumbered or too few Medicare stays);
-  - **0** collide with an ID that is already mapped.
-- After removing 53 national and state summary rows, the PAC file has **1,165 facilities**.
+Tested with Python 3.14.4. Use a virtual environment with the pinned dependencies.
 
-### Suppressed and missing values
-
-CMS hides small numbers to protect privacy. These markers are never treated as 0.
-
-| Marker | Meaning | Stage 1 handling |
-|---|---|---|
-| `*` in PAC numeric columns | Ten or fewer beneficiaries | Set to missing; for dual-eligible % and rural % a flag column records that the value was suppressed |
-| `+` in dual-eligible % | Withheld for Puerto Rico because of data limitations | Left missing |
-| Impairment-group count "less than 11" | Count of 1–10 | Flagged; filled with 5 only when computing shares |
-| Non-numeric quality score | Not available, too few cases, etc. | Set to missing; the CMS footnote is kept |
-
-How these values are handled in the models is part of a later stage.
-
-### Audit log
-
-Every cleaning rule, the number of records it affected and the action taken is written to
-[`data/processed/audit_log.csv`](data/processed/audit_log.csv) (31 rows). Examples:
-
-| Rule | Check | Records | Action |
-|---|---|---|---|
-| DQ-04 | Suppressed cells (`*`, `+`) across all PAC numeric columns | 15,294 | Set to missing, never 0 |
-| DQ-06 | PT/OT/SLP therapy minutes do not add up to the total | 0 | Flag (none found) |
-| DQ-09b–e | Unit-style CCN crosswalk | 810 | 692 mapped, 118 unmapped |
-| DQ-15 | Quality scores that are non-numeric or suppressed | 14,175 | Set to missing |
-| DQ-32 | Quality-file facilities absent from the PAC file | 145 | Not in the analytical cohort |
-
-### Run Stage 1
-
-```bash
-git clone https://github.com/shitingzhang/rehab-analytics.git
-cd rehab-analytics
-pip install -r requirements.txt
-# save the four CMS files in data/raw/ first (see Data above)
+```powershell
+python -m pip install -r requirements.txt
 python src/01_data_quality_cms.py
+python src/check_linkage.py
+python src/02_build_database.py
+python src/03_execute_sql.py
+python src/04_analysis.py --as-planned
+python src/04_analysis.py --check
+python src/05_screening.py --as-planned
+python src/05_screening.py
+python src/07_model_diagnostics.py
+python src/08_figures.py
 ```
 
-Outputs in `data/processed/`: the audit log, the CCN crosswalk, the cleaned quality measures in long format, the
-national and state reference rows and the measurement window of each quality measure.
-
-## AI assistance
-
-The topic, research questions and clinical reasoning are my own. I did most of the data cleaning and wrote the code
-that maps facility IDs before I started working with an AI assistant (Claude, Anthropic), which later helped refine the
-code, check the statistics and draft documentation. Every decision was reviewed and approved by me.
+For local runs, add `--show-current` to step 03 or 05 to locate the latest successful batch. Add `--as-planned` to step 05 to select the original specification. The repository includes aggregate result snapshots. Facility-level analytical cohorts, databases, and review lists are stored locally.
 
 ## Author
 
-**Shiting Zhang** — rehabilitation background, working in health data science.
-GitHub: [@shitingzhang](https://github.com/shitingzhang)
+**Shiting Zhang** · Rehabilitation background and health data science. [GitHub profile](https://github.com/shitingzhang)
+
+I designed the research questions and clinical comparisons, completed most of the source cleaning, and wrote the initial facility ID mapping. AI assisted with selected coding, debugging, writing, and GitHub workflows. I reviewed the analysis choices and results.

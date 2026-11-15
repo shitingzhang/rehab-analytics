@@ -1,0 +1,2 @@
+# Raw and processed data must stay byte-for-byte as downloaded/produced (no line-ending conversion)
+data/** -text
