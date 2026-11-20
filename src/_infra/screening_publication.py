@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from model_publication import validate_batch
+from .model_publication import validate_batch
 
 REQUIRED = ['priority_review_list.csv', 'sensitivity_grid.csv', 'fairness_flag_rates.csv',
             'screen_all_facilities.csv', 'screening_summary.txt', 'screening_scatter.png']

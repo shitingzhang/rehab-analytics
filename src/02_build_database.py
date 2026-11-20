@@ -385,6 +385,6 @@ def build_database(before_publish=None) -> None:
 
 
 if __name__ == "__main__":
-    from input_provenance import recorded_stage
+    from _infra.input_provenance import recorded_stage
     with recorded_stage("database") as check_sources:
         build_database(before_publish=check_sources)

@@ -1,4 +1,4 @@
-﻿__pycache__/
+__pycache__/
 *.pyc
 .ipynb_checkpoints/
 .venv/
@@ -70,3 +70,9 @@ data/processed/clean_provenance.json
 data/processed/database_provenance.json
 data/processed/.source-chain.lock
 data/processed/.provenance-*/
+
+# Local inputs and working notes
+/data/raw/*.csv
+/.claude/
+/docs/work_log.md
+/docs/analysis_plan.md

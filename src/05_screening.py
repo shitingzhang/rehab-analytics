@@ -18,8 +18,8 @@ import io
 import os
 import sys
 from pathlib import Path
-from model_publication import publish_batch
-from screening_publication import REQUIRED, validate_screen_files, current_screen_dir
+from _infra.model_publication import publish_batch
+from _infra.screening_publication import REQUIRED, validate_screen_files, current_screen_dir
 
 import matplotlib
 import numpy as np
@@ -48,7 +48,7 @@ def out(*a):
     print(*a, file=buf)
 
 
-from screening_guards import lstsq, components, r_squared
+from _infra.screening_guards import lstsq, components, r_squared
 
 
 def jaccard(a, b):
@@ -200,8 +200,8 @@ def main():
         print(current_screen_dir(root))
         return
     inputs = [Path(p) for p in ['data/processed/irf_analytics.db', 'src/05_screening.py',
-              'src/irf_common.py', 'src/screening_guards.py', 'src/screening_publication.py',
-              'src/model_publication.py']]
+              'src/irf_common.py', 'src/_infra/screening_guards.py', 'src/_infra/screening_publication.py',
+              'src/_infra/model_publication.py']]
     funnel_present = Path(FUNNEL_PATH).exists()
     if funnel_present:
         inputs.append(Path(FUNNEL_PATH))

@@ -1,0 +1,9 @@
+{
+  "condition_rows": 10998,
+  "true_suppressed_cells": 1658,
+  "unavailable_cells": 828,
+  "provider_count": 1165,
+  "providers_without_condition_record": 88,
+  "providers_with_Not_Available": 130,
+  "composition_unknown_total": 218
+}

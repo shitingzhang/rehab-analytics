@@ -431,6 +431,6 @@ def run_quality_pipeline() -> None:
 
 
 if __name__ == "__main__":
-    from input_provenance import recorded_stage
+    from _infra.input_provenance import recorded_stage
     with recorded_stage("clean"):
         run_quality_pipeline()

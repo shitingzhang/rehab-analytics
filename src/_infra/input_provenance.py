@@ -17,7 +17,7 @@ RAW = tuple('data/raw/' + name for name in (
 CLEAN = tuple('data/processed/' + name for name in (
     'clean_facility_cohort.csv', 'irf_qrp_long_clean.csv', 'ccn_crosswalk.csv',
     'pac_national_state_reference.csv', 'irf_measure_periods.csv', 'audit_log.csv'))
-HELPER = 'src/input_provenance.py'
+HELPER = 'src/_infra/input_provenance.py'
 CLEAN_INPUTS = RAW + ('src/01_data_quality_cms.py', HELPER)
 CLEAN_RECEIPT = 'data/processed/clean_provenance.json'
 DB_RECEIPT = 'data/processed/database_provenance.json'

@@ -123,13 +123,13 @@ def manifest_for(batch):
 
 
 def model_inputs(script):
-    from input_provenance import require_database
+    from .input_provenance import require_database
     provenance = require_database()
     return list(dict.fromkeys(provenance + [Path(p) for p in [
         'data/processed/irf_analytics.db', 'data/processed/ccn_crosswalk.csv',
         'data/raw/irf_conditions.csv', 'data/raw/pac_irf_by_provider.csv',
         'src/irf_common.py', 'src/mode_mix_post_audit.py', 'src/strict_regression.py',
-        'src/model_publication.py', script]]))
+        'src/_infra/model_publication.py', script]]))
 
 
 def fingerprint_inputs(paths):
@@ -202,5 +202,5 @@ def publish_batch(root, expected_files, inputs, dependencies=None):
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        raise SystemExit('Usage: python src/model_publication.py OUTPUT_ROOT')
+        raise SystemExit('Usage: python src/_infra/model_publication.py OUTPUT_ROOT')
     print(current_result_dir(sys.argv[1]))
