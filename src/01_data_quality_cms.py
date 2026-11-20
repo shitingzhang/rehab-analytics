@@ -1,19 +1,8 @@
-"""
-01_data_quality_cms.py
-Data-quality audit, cleaning and feature engineering for REAL public CMS inpatient
-rehabilitation (IRF) data.
+"""Build the facility cohort from four CMS files.
 
-Grain changes from  encounter (patient stay)  ->  facility (one row per CCN).
-
-Inputs (download manually, then rename into data/raw/):
-    pac_irf_by_provider.csv      Medicare Post-Acute Care Utilization - IRF by Geography and Provider (FY2024)
-    irf_general_information.csv  Provider Data Catalog: Inpatient Rehabilitation Facility - General Information
-    irf_provider_data.csv        Provider Data Catalog: Inpatient Rehabilitation Facility - Provider Data (long format)
-    irf_conditions.csv           Provider Data Catalog: Inpatient Rehabilitation Facility - Conditions
-
-Outputs (data/processed/):
-    audit_log.csv                every rule, count, and action  (nothing is dropped silently)
-    clean_facility_cohort.csv    one row per IRF, PAC utilization + QRP outcomes + case-mix
+Link Medicare utilization records to facility information, quality measures, and
+impairment counts by CMS Certification Number (CCN). Write one row per facility
+to clean_facility_cohort.csv and record the cleaning checks in audit_log.csv.
 """
 
 import os
@@ -32,12 +21,12 @@ FILES = {
     "conditions": "irf_conditions.csv",
 }
 
-# CMS suppression markers (small cells / privacy). They are NOT zeros.
-NO_FOOTNOTE_TOKENS = {"", "-"}   # "-" = CMS placeholder for "no footnote"
+# These CMS markers are read as missing when converting values to numbers.
+NO_FOOTNOTE_TOKENS = {"", "-"}   # CMS uses a dash when there is no footnote.
 SUPPRESSION_TOKENS = {"*", "+", "", "NA", "N/A", "NOT AVAILABLE", "LESS THAN 11", "<11"}
 
 PCT_COLS_HINT = re.compile(r"_pct$")
-SUPPRESSED_FILL = 5          # CMS suppresses counts of 1-10; midpoint used for impairment-group shares
+SUPPRESSED_FILL = 5          # Fill value used by the historical impairment calculation.
 MEASURES_KEEP = [  # QRP measure codes used downstream (see IRF_Data_Dictionary.pdf, Table 9)
     "I_017_01_PPR_PD_OBS_RATE", "I_017_01_PPR_PD_RSRR",
     "I_017_01_PPR_PD_RSRR_2_5", "I_017_01_PPR_PD_RSRR_97_5", "I_017_01_PPR_PD_VOLUME",
@@ -47,13 +36,12 @@ MEASURES_KEEP = [  # QRP measure codes used downstream (see IRF_Data_Dictionary.
 ]
 
 
-# Helpers
 def snake(name: str) -> str:
     return re.sub(r"[^0-9a-z]+", "_", str(name).strip().lower()).strip("_")
 
 
 def find_col(df: pd.DataFrame, *patterns: str) -> str:
-    """Return the first column whose snake_case name matches any regex (robust to header drift)."""
+    """Find the first column matching one of the given patterns."""
     for pat in patterns:
         for col in df.columns:
             if re.search(pat, col):
@@ -62,8 +50,7 @@ def find_col(df: pd.DataFrame, *patterns: str) -> str:
 
 
 def to_ccn(s: pd.Series) -> pd.Series:
-    """CCNs are 6-character IDs. Keep LETTERS (hospital-based rehab units carry a letter in
-    position 3, e.g. '01T011') and keep leading zeros - never read them as numbers."""
+    """Normalize six-character CCNs and preserve letters and leading zeros."""
     t = s.astype("string").str.strip().str.upper().str.replace(r"[^0-9A-Z]", "", regex=True)
     t = t.mask(t.fillna("") == "")
     return t.str.zfill(6)
@@ -101,15 +88,12 @@ class Audit:
 
 # 1. PAC utilization file (one row per provider for FY2024; also contains NATION/STATE rows)
 def build_ccn_crosswalk(source_ids: pd.Series, pac_ids: set, audit: Audit) -> dict:
-    """Provider Data files identify hospital-based rehab units with a letter in position 3
-    ('01T011'); the PAC utilization file uses a numeric ID for the same facility ('010011').
+    """Match lettered rehab unit CCNs to numeric PAC provider IDs.
 
-    Rules (the data decides, nothing is hard-coded):
-      1. Try every digit 0-9 in position 3 and keep candidates that exist in the PAC file.
-      2. A candidate that is ALREADY an exact ID of another facility in the source files
-         (e.g. the free-standing hospital '013025' vs the unit '01T025') is not allowed.
-      3. Exactly one candidate -> mapped. Several -> resolved with the letter->digit rule learned
-         from the unambiguous cases (only if >=95% of them agree), otherwise left unmapped.
+    Try replacing the third character with each digit. Keep PAC candidates that
+    do not already identify a facility in the source data. Use unique matches
+    directly. When several candidates remain, use a letter-to-digit mapping
+    only if at least 95% of the unique matches for that letter agree.
     """
     from collections import Counter
     src = set(source_ids.dropna())
@@ -188,7 +172,7 @@ def clean_pac(audit: Audit) -> pd.DataFrame:
         audit.add("DQ-04b", "pac", f"{c} suppressed ('*', true count 1-10)", pac[flag].sum(),
                   f"Flagged ({flag}); filled with 5 beneficiaries in the analysis (plan v1.3)")
 
-    # Numeric conversion + suppression accounting (so '*' is never silently treated as 0)
+    # Count marked values before converting the fields to numbers.
     num_cols = [c for c in pac.columns if c.startswith(("bene_", "tot_", "indvdl_", "cncrnt_", "cotrt_", "prmry_dx_"))]
     n_suppressed = 0
     for c in num_cols:
@@ -234,7 +218,7 @@ def clean_pac(audit: Audit) -> pd.DataFrame:
         pac[f"{t}_min_per_day"] = (pac[f"tot_{t}_mnts"] / days).round(1)
     pac["therapy_min_per_day"] = pac[["pt_min_per_day", "ot_min_per_day", "slp_min_per_day"]].sum(axis=1, min_count=3)
 
-    # --- Therapy DOSE / MODE / MIX (research question: how much, in what format, and which disciplines) ---
+    # Calculate therapy minutes by format and discipline.
     def _sum3(prefix):                      # sum a minute type across PT, OT, SLP (needs all three)
         return pac[[f"{prefix}_{t}_mnts" for t in ("pt", "ot", "slp")]].sum(axis=1, min_count=3)
 
@@ -249,8 +233,7 @@ def clean_pac(audit: Audit) -> pd.DataFrame:
     for t in ("pt", "ot", "slp"):                                        # discipline mix (shares sum to 1)
         pac[f"{t}_share"] = (pac[f"tot_{t}_mnts"] / total_min).round(3)
 
-    # Standardized payment (the PAC file's own 'standardized' amount; confirm in the data dictionary that it
-    # removes geographic payment adjustments) is the cost outcome, so states are comparable.
+    # Use CMS's standardized payment amount for the per-stay measure.
     pac["std_pay_per_stay"] = (pac["tot_mdcr_stdzd_pymt_amt"] / stays).round(0)
     pac["outlier_payment_share"] = (pac["tot_outlier_pymt_amt"] / pac["tot_mdcr_pymt_amt"]).round(4)
 
@@ -278,8 +261,7 @@ def clean_qrp(audit: Audit, xwalk: dict) -> pd.DataFrame:
     # 2 not available, 3 shorter period than required (score IS reported), 4 suppressed, 5 not submitted,
     # 6/7 infection measures only, 8 waiver. Scores that are not numeric are already NaN via to_num.
     has_fn = (fn.notna() & ~fn.isin(list(NO_FOOTNOTE_TOKENS))).fillna(False)
-    # A footnote EXPLAINS a score; it does not invalidate it. Non-numeric/suppressed scores are
-    # already NaN through to_num, so nothing is nulled on the footnote alone.
+    # Keep numeric scores even when CMS attaches a footnote.
     audit.add("DQ-12", "qrp", "Rows carrying a CMS footnote", has_fn.sum(),
               "Kept; footnote preserved in irf_qrp_long_clean.csv (score NOT nulled)")
     audit.add("DQ-14", "qrp", "Numeric scores that also carry a footnote", (has_fn & qrp["score_num"].notna()).sum(),
@@ -341,13 +323,11 @@ def clean_general(audit: Audit, xwalk: dict) -> pd.DataFrame:
 
 
 def clean_conditions(audit: Audit, xwalk: dict) -> pd.DataFrame:
-    """Historical impairment preparation, retained to reproduce previously reported models.
+    """Prepare impairment counts for the historical analysis.
 
-    The legacy token set also fills Not Available, which is NOT a known small count.
-    DQ-21 counts legacy fill-eligible rows before deduplication across all condition providers;
-    DQ-22 counts providers meeting its legacy threshold. dx_n_suppressed_cells keeps the
-    pre-deduplication row count per provider. Current mode/mix construction handles these separately
-    in mode_mix_post_audit.py and rejects duplicate keys rather than silently deduplicating.
+    The historical rule assigns the same fill value to suppressed and unavailable
+    counts. The audit counts these rows before deduplication. The current analysis
+    distinguishes these cases in mode_mix_post_audit.py.
     """
     cond = read_raw("conditions")
     cond["ccn_source"] = to_ccn(cond[find_col(cond, r"ccn", r"certification_number")])
@@ -395,7 +375,7 @@ def run_quality_pipeline() -> None:
     cond = clean_conditions(audit, xwalk)
 
     print("4/4 Joining on CCN and logging every join loss ...")
-    # Referential integrity: previously missing in the synthetic project, now explicit
+    # Count unmatched records before joining on CCN.
     audit.add("DQ-30", "join", "PAC providers with no match in General Information",
               (~pac["ccn"].isin(gen["ccn"])).sum(), "Kept (left join); ownership/region = NaN")
     audit.add("DQ-31", "join", "PAC providers with no QRP measures (e.g., not required / too small)",
@@ -407,7 +387,7 @@ def run_quality_pipeline() -> None:
                  .merge(qrp, on="ccn", how="left")
                  .merge(cond, on="ccn", how="left"))
 
-    # 3-tier operational review flag, now RISK-ADJUSTED by peer group instead of a fixed LOS cutoff
+    # Compare length of stay with the median for the facility's ownership group.
     peer = cohort.groupby("ownership_type")["alos_days"]
     cohort["alos_vs_peer_median"] = (cohort["alos_days"] / peer.transform("median")).round(3)
     low_dtc = cohort["i_019_02_dtc_rs_rate"] < cohort["i_019_02_dtc_rs_rate"].quantile(0.25)
