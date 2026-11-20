@@ -1,18 +1,8 @@
-"""
-05_screening.py  (implements section 9 of docs/analysis_plan.md)
-Run from the project root after 02 (and, for the funnel comparison, after 04):   python src/05_screening.py [--as-planned]
---as-planned reproduces the v1.2 screen (suppressed dual / rural % left missing) into a separate folder.
+"""Flag facilities for review using length of stay and community discharge.
 
-Case-mix-adjusted "priority for review" screen for inpatient rehabilitation facilities.
-  1. Expected ALOS and expected discharge-to-community (DTC) rate from CASE-MIX variables only
-     (ownership, state and therapy are deliberately excluded so the screen does not adjust away what it looks for).
-  2. Primary rule: observed/expected ALOS >= 1.20  AND  DTC residual in the lowest quartile.
-  3. Refit frequency: refit on 500 facility bootstrap resamples and re-apply to all original facilities.
-     Legacy robust_flag means frequency >= 80%, independently of the original primary flag.
-     This does not estimate a probability of poor care or include all outcome uncertainty.
-  4. Sensitivity grid over thresholds; convergence with funnel-plot outliers; fairness of flag rates across groups.
-This produces a LIST FOR FURTHER REVIEW, not a verdict: there is no ground truth, and unmeasured differences
-between patients can produce a flag. Facilities are never labelled inefficient.
+The historical rule selects facilities with stays at least 20% longer than
+expected and discharge residuals in the bottom quartile. Bootstrap refits
+measure how often each facility meets both criteria.
 """
 import io
 import os
@@ -86,7 +76,7 @@ def build_results():
     out(f"Primary rule: O/E ALOS >= {RATIO:.2f} and DTC residual <= {q:.1f} points (the {DTC_PCT}th percentile) "
         f"-> {int(s['flag'].sum())} facilities flagged ({100 * s['flag'].mean():.1f}%)")
 
-    # ---- bootstrap stability: refit on resampled facilities, re-apply the rule to every facility
+    # Refit on resampled facilities and score the full cohort each time.
     rng = np.random.default_rng(SEED)
     n = len(s)
     counts = np.zeros(n)
@@ -105,11 +95,9 @@ def build_results():
         f"{int((s['flag'] & s['robust_flag']).sum())} also meet the original primary rule; "
         f"{int((~s['flag'] & s['robust_flag']).sum())} do not meet the original primary rule. "
         f"{int(((s['flag_frequency'] > 0) & ~s['flag']).sum())} primary-unflagged facilities are flagged in some refits.")
-    out("Refit frequency holds each original facility's observed outcomes fixed; expected values and the "
-        "DTC-residual percentile cutoff are recalculated in each refit. It is not a probability of poor care, "
-        "an outcome uncertainty interval, or external validation.")
+    out("Each refit keeps observed outcomes fixed and recalculates expected outcomes and the discharge cutoff.")
 
-    # ---- sensitivity grid
+    # Compare alternative screening thresholds.
     rows = []
     for r in GRID_RATIOS:
         for p in GRID_PCTS:
@@ -122,7 +110,7 @@ def build_results():
     out("\n=== Sensitivity of the screen to its thresholds ===")
     out(grid.to_string(index=False))
 
-    # ---- convergence with other approaches
+    # Compare flags with the readmission funnel and peer-median rule.
     out("\n=== Agreement with other screens ===")
     if os.path.exists(FUNNEL_PATH):
         fl = pd.read_csv(FUNNEL_PATH, dtype={"ccn": str})[["ccn", "above_99_8"]]
@@ -137,7 +125,7 @@ def build_results():
         out(f"Earlier peer-median rule (review_flag in 01): {int(old.sum())} facilities; "
             f"{int((old & s['flag']).sum())} also flagged here; Jaccard = {jaccard(old, s['flag']):.2f}")
 
-    # ---- fairness of flag rates
+    # Summarize flag rates by facility group.
     groups = {"ownership": s["ownership_type"].fillna("Unknown"),
               "setting": s["unit"].map({1.0: "hospital-based unit", 0.0: "free-standing / other"}),
               "dual-eligible %": tertile(s["dual10"], "dual"), "rural %": tertile(s["rural10"], "rural"),  # filled values
@@ -152,10 +140,9 @@ def build_results():
         t["robust_rate_%"] = (100 * t["robust"] / t["facilities"]).round(1)
         fr.append(t)
     fairness = pd.concat(fr, ignore_index=True)
-    out("\n=== Descriptive flag rates by group (differences alone do not establish bias or fairness) ===")
+    out("\n=== Flag rates by facility group ===")
     out(fairness.to_string(index=False))
 
-    # ---- outputs
     s["reason"] = ("ALOS " + ((s["oe_alos"] - 1) * 100).round(0).astype(int).astype(str) + "% above expected; DTC "
                    + s["dtc_residual"].round(1).astype(str) + " points vs expected")
     keep = [c for c in ["ccn", "prvdr_name", "state", "ownership_type", "unit", "tot_epsd_stay_cnt", "alos_days",
@@ -184,7 +171,7 @@ def build_results():
     fig.savefig(f"{FIG_DIR}/screening_scatter.png", dpi=150)
     plt.close(fig)
 
-    out("\nReminder: this list prioritises facilities for a closer look. It does not establish that any facility is inefficient.")
+    out("\nFlagged facilities warrant individual review.")
     with open(f"{OUT_DIR}/screening_summary.txt", "w", encoding="utf-8") as fh:
         fh.write(buf.getvalue())
     print(f"\nSaved to {OUT_DIR}/ and {FIG_DIR}/screening_scatter.png")

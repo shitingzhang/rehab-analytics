@@ -1,4 +1,4 @@
-"""Compare Model A with the same facility regressions weighted to Model B's eight strata."""
+"""Refit Model A after weighting facilities by setting and stay volume."""
 
 from pathlib import Path
 
@@ -166,8 +166,6 @@ def main():
         "## Reproduction",
         "",
         "Run `python src/selection_weighted_regression.py` from the repository root. "
-        "The script verifies membership and cell counts, reproduces the saved original estimates, and checks every "
-        "weighted coefficient, clustered standard error and interval against statsmodels. "
         "[Study design and sample selection](study_design.md)",
         "",
     ]

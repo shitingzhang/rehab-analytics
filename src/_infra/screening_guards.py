@@ -1,4 +1,4 @@
-"""Candidate checks only; preserve OLS, screening thresholds and bootstrap draws."""
+"""Fit the screening regressions and calculate observed-to-expected stay ratios."""
 import warnings
 import numpy as np
 
@@ -14,7 +14,7 @@ def lstsq(X, y):
         raise ValueError('Nonfinite screening input')
     beta, _, rank, _ = np.linalg.lstsq(X, y, rcond=None)
     if rank != k:
-        raise ValueError('Rank-deficient screening design; no automatic term removal or redraw')
+        raise ValueError('Screening design matrix is rank deficient')
     if not np.isfinite(beta).all():
         raise ValueError('Nonfinite screening coefficients')
     return beta
@@ -29,7 +29,7 @@ def components(observed_alos, observed_dtc, expected_alos, expected_dtc):
         raise ValueError('Nonfinite screening observations or predictions')
     yA, yD, eA, eD = arrays
     if np.any(eA <= 0):
-        raise ValueError('Expected ALOS must be positive for O/E screening; no clipping or row removal')
+        raise ValueError('Expected length of stay must be positive to calculate the observed-to-expected ratio')
     with np.errstate(over='ignore', divide='ignore', invalid='ignore'):
         ratio, residual = yA / eA, yD - eD
     if not np.isfinite(ratio).all() or not np.isfinite(residual).all():

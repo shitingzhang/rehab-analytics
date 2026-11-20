@@ -5,7 +5,7 @@ DQ-02,pac,Provider ID is not a valid 6-character CCN,0,Excluded
 DQ-03,pac,"Duplicate (year, CCN) rows",0,Deduplicated (kept first)
 DQ-04b,pac,"bene_dual_pct suppressed ('*', true count 1-10)",168,Flagged (dual_suppressed); filled with 5 beneficiaries in the analysis (plan v1.3)
 DQ-04b,pac,"bene_rrl_pct suppressed ('*', true count 1-10)",499,Flagged (rural_suppressed); filled with 5 beneficiaries in the analysis (plan v1.3)
-DQ-04,pac,"Suppressed cells ('*', '+') converted to missing, across all numeric columns",15294,Set to NaN; never imputed as 0
+DQ-04,pac,"Suppressed cells ('*', '+') converted to missing, across all numeric columns",15294,Recorded as missing
 DQ-05,pac,Any percentage column outside 0-100,0,Flagged (dq_flag_pct_range); kept
 DQ-06,pac,Therapy-minute components do not sum to total (PT/OT/SLP),0,Flagged (dq_flag_minutes); kept
 DQ-07,pac,"Non-positive stays, or covered days < stays (implied LOS < 1)",0,Excluded from LOS/efficiency metrics (set to NaN)
@@ -18,7 +18,7 @@ DQ-09e,crosswalk,"...no PAC counterpart (e.g., closed/renumbered, too few Medica
 DQ-09f,crosswalk,...would collide with an already-mapped PAC ID,0,Left unmapped
 DQ-10,qrp,Long-format rows loaded (provider x measure),79430,Informational
 DQ-11,qrp,"Duplicate (CCN, measure code) rows",0,Deduplicated (kept first)
-DQ-12,qrp,Rows carrying a CMS footnote,10663,Kept; footnote preserved in irf_qrp_long_clean.csv (score NOT nulled)
+DQ-12,qrp,Rows carrying a CMS footnote,10663,Retained the row and its footnote
 DQ-14,qrp,Numeric scores that also carry a footnote,777,Kept; check footnote meaning in IRF_Data_Dictionary.pdf
 DQ-15,qrp,Scores that are non-numeric or suppressed,14175,Set to NaN (includes comparative-performance text rows)
 DQ-13,qrp,Rate/RSRR outside 0-100,0,Set to NaN

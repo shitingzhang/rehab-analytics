@@ -32,4 +32,4 @@ The entries are adjusted facility-level differences. DTC and RSRR use percentage
 
 The curve is continuous at zero and constrained to be linear above 30%. The zero-width interval at 0% follows from using 0% as the reference. Histograms show the observed facilities in two-percentage-point bins. Sparse upper-tail data limit interpretation. The selected knots do not establish clinical thresholds.
 
-Reproduce from the repository root with `python src/group_share_nonlinearity.py`. Checks compare the original linear estimate and interval with Model A and reproduce spline fits, curvature tests and contrasts using an independent natural-cubic interpolation basis.
+Run `python src/group_share_nonlinearity.py` to reproduce the table and figure.

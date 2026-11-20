@@ -1,20 +1,7 @@
-"""
-02_build_database.py
-Builds the SQLite analytical database  data/processed/irf_analytics.db  from the outputs of
-01_data_quality_cms.py  (run from the project root).
+"""Load the cleaned CMS tables into SQLite.
 
-Tables
-    facility            curated, typed analysis table: PRIMARY KEY (ccn) + CHECK constraints
-    facility_wide       every column of clean_facility_cohort.csv (no constraints)
-    qrp_long            cleaned quality measures, one row per facility x measure (with footnote)
-    ccn_crosswalk       Provider Data ID -> PAC ID mapping and how each ID was resolved
-    pac_reference       typed national / state benchmarks; numeric source tokens retained in *_raw
-    measure_periods     reporting window of each key quality measure
-    audit_log           every data-quality rule, count and action
-
-The DDL is also written to sql/schema.sql so it is visible on GitHub.
-A complete, checked temporary database replaces the previous database only on success.
-Run without concurrent database writers; active journal/WAL files stop publication.
+The analysis reads facility characteristics from facility and impairment counts
+from facility_wide. See sql/schema.sql for column definitions.
 """
 import os
 import sqlite3
@@ -96,7 +83,7 @@ FACILITY_SPEC = [
     ("i_020_01_mspb_score", "REAL", NONNEG),
     ("i_019_02_dtc_rs_rate_fn", "TEXT", None),
     ("i_017_01_ppr_pd_rsrr_fn", "TEXT", None),
-    # derived governance fields
+    # length-of-stay comparison and data-quality flags
     ("alos_vs_peer_median", "REAL", NONNEG),
     ("review_flag", "TEXT", "{c} IN ('Standard', 'Incomplete Data', 'Priority for Review')"),
     ("dq_flag_pct_range", "INTEGER", "{c} IS NULL OR {c} IN (0, 1)"),
@@ -108,7 +95,7 @@ FOOTNOTE_COLS = [name for name, _, _ in FACILITY_SPEC if name.endswith("_fn")]
 
 
 def parse_boolean_token(value):
-    """Reject invalid flag text before pandas can silently treat it as missing."""
+    """Parse Boolean flags from the cleaned CSV."""
     if value is None or (not isinstance(value, str) and pd.isna(value)):
         return np.nan
     token = str(value).strip().lower()
@@ -127,8 +114,7 @@ INDEXES = [
 ]
 
 
-# Explicit PAC reference contract: never infer numeric types from observed markers.
-# Raw companions preserve every numeric source token, including missing markers.
+# Keep the original CMS tokens alongside the numeric benchmark values.
 REFERENCE_TYPES = {
     'year': 'INTEGER',
     'year_type': 'TEXT',
@@ -280,16 +266,13 @@ def validate_database(conn, expected_rows, expected_indexes):
 
 
 def require_no_journal(target):
-    """Fail conservatively if a database may have another writer or need recovery."""
+    """Check for SQLite journal files before replacing the database."""
     if any(Path(str(target) + suffix).exists() for suffix in ("-wal", "-shm", "-journal")):
         raise RuntimeError("Database journal/WAL files exist; close writers and inspect the database before rebuilding.")
 
 
 def publish_database(staged_db, schema_text, target, schema_path):
-    """Publish the database with one same-filesystem replace after connections close.
-
-    Restore the old schema file if the database replace raises. This is exception
-    recovery, not a cross-file transaction or a guarantee against power loss.
+    """Replace the database and restore the previous schema file if replacement fails.
     """
     require_no_journal(target)
     with tempfile.TemporaryDirectory(dir=schema_path.parent, prefix=".schema-build-") as tmp:

@@ -64,4 +64,4 @@ Selection can still depend on patients, facilities or volume differences within 
 
 ## Reproduction
 
-Run `python src/selection_weighted_regression.py` from the repository root. The script verifies membership and cell counts, reproduces the saved original estimates, and checks every weighted coefficient, clustered standard error and interval against statsmodels. [Study design and sample selection](study_design.md)
+Run `python src/selection_weighted_regression.py` from the repository root. [Study design and sample selection](study_design.md)

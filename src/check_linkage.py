@@ -1,9 +1,8 @@
-"""check_linkage.py - run from the project root after 01_data_quality_cms.py:  python src/check_linkage.py
-Facility linkage audit (deviation log, plan v1.3). For every facility linked between the Provider Data General Information
-file and the PAC utilization file, compares state, city and ZIP code; name similarity (token Jaccard) is descriptive only.
-A link is LOW-CONFIDENCE if the state differs, or if both the city and the ZIP code differ.
-Looks at facility identifiers only, never at outcomes.
-Outputs: data/processed/linkage_audit/linkage_check.csv (one row per linked facility, no names) and linkage_summary.txt"""
+"""Check facility matches between the CMS Provider Data and utilization files.
+
+Flag a match for review if the states differ or both the city and ZIP code differ.
+Name similarity is reported separately.
+"""
 import io
 import os
 import re

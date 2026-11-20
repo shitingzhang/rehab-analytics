@@ -1,4 +1,4 @@
-"""Post-results functional-form sensitivity for the group/concurrent therapy share."""
+"""Compare linear and spline fits for the share of group or concurrent therapy."""
 
 from pathlib import Path
 
@@ -242,9 +242,7 @@ def main():
         "from using 0% as the reference. Histograms show the observed facilities in two-percentage-point bins. "
         "Sparse upper-tail data limit interpretation. The selected knots do not establish clinical thresholds.",
         "",
-        "Reproduce from the repository root with `python src/group_share_nonlinearity.py`. "
-        "Checks compare the original linear estimate and interval with Model A and reproduce spline fits, curvature tests "
-        "and contrasts using an independent natural-cubic interpolation basis.",
+        "Run `python src/group_share_nonlinearity.py` to reproduce the table and figure.",
         "",
     ]
     Path("docs/group_share_nonlinearity.md").write_text(

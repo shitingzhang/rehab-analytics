@@ -179,7 +179,7 @@ def clean_pac(audit: Audit) -> pd.DataFrame:
         n_suppressed += int(is_suppressed(pac[c]).sum())
         pac[c] = to_num(pac[c])
     audit.add("DQ-04", "pac", "Suppressed cells ('*', '+') converted to missing, across all numeric columns",
-              n_suppressed, "Set to NaN; never imputed as 0")
+              n_suppressed, "Recorded as missing")
 
     pct_cols = [c for c in num_cols if PCT_COLS_HINT.search(c)]
     out_of_range = ((pac[pct_cols] < 0) | (pac[pct_cols] > 100)).any(axis=1)
@@ -258,12 +258,12 @@ def clean_qrp(audit: Audit, xwalk: dict) -> pd.DataFrame:
     qrp["score_num"] = to_num(qrp[score_col])
     fn = qrp[foot_col].astype("string").str.strip()
     # '-' is CMS's placeholder for "no footnote". Codes (IRF_Data_Dictionary.pdf, Table 10): 1 too few cases,
-    # 2 not available, 3 shorter period than required (score IS reported), 4 suppressed, 5 not submitted,
+    # 2 not available, 3 shorter reporting period (score available), 4 suppressed, 5 not submitted,
     # 6/7 infection measures only, 8 waiver. Scores that are not numeric are already NaN via to_num.
     has_fn = (fn.notna() & ~fn.isin(list(NO_FOOTNOTE_TOKENS))).fillna(False)
     # Keep numeric scores even when CMS attaches a footnote.
     audit.add("DQ-12", "qrp", "Rows carrying a CMS footnote", has_fn.sum(),
-              "Kept; footnote preserved in irf_qrp_long_clean.csv (score NOT nulled)")
+              "Retained the row and its footnote")
     audit.add("DQ-14", "qrp", "Numeric scores that also carry a footnote", (has_fn & qrp["score_num"].notna()).sum(),
               "Kept; check footnote meaning in IRF_Data_Dictionary.pdf")
     audit.add("DQ-15", "qrp", "Scores that are non-numeric or suppressed", qrp["score_num"].isna().sum(),

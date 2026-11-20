@@ -175,7 +175,7 @@ def build_results(dest):
             ],
         ].to_string(index=False)
     )
-    print("All 9 independent model checks passed. Outputs:", OUT)
+    print("Results saved to", dest)
 
 
 if __name__ == "__main__":

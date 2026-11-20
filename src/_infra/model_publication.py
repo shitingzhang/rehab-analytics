@@ -1,8 +1,4 @@
-"""Complete, immutable result batches for the post-audit models only.
-
-Consumers pin a validated batch once. Failed attempts retain their files for
-diagnosis without becoming current. This is not a transaction across analyses.
-"""
+"""Save result files together and track which run completed successfully."""
 from contextlib import contextmanager
 from datetime import datetime, timezone
 import hashlib
@@ -102,19 +98,19 @@ def current_reference(root):
 
 
 def current_result_dir(root):
-    """Pin current results once; reject failed/incomplete latest attempts."""
+    """Return the validated directory for the current successful run."""
     return validate_batch(root, current_reference(root))
 
 
 def last_successful_reference(root):
-    """Explicit historical access; does not establish success of the latest attempt."""
+    """Read the reference for the most recent completed run."""
     root = Path(root)
     status = json.loads((root / 'run_status.json').read_text(encoding='utf-8'))
     return _reference_from_status(root, status)
 
 
 def last_successful_result_dir(root):
-    """Read the retained successful batch for audit/recovery, never as a rerun status."""
+    """Locate the most recent completed run, even after a later failure."""
     return validate_batch(root, last_successful_reference(root))
 
 
@@ -143,7 +139,7 @@ def fingerprint_inputs(paths):
 
 
 def require_matching_inputs(primary, inputs):
-    """A sensitivity cannot silently attach to results built from other inputs."""
+    """Check that shared inputs match the primary run."""
     saved = manifest_for(primary)['inputs']
     for key, value in inputs.items():
         if key in saved and saved[key] != value:

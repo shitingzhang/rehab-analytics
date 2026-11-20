@@ -1,14 +1,6 @@
-"""
-07_model_diagnostics.py  (deviation log of docs/analysis_plan.md, plan v1.3)
-Run from the project root after 02_build_database.py (needs statsmodels):   python src/07_model_diagnostics.py
+"""Check the historical therapy-dose regressions for collinearity and influential facilities.
 
-Diagnostics of the v1.3 primary model for each outcome; none of them changes the primary model.
-  1. Collinearity: VIF of every non-state term after removing state means (the state fixed effects).
-  2. HCC risk score vs dual %: dose coefficient without the risk score, and without dual % (+ its indicator).
-  3. Residuals: residual-vs-fitted and normal Q-Q plots; skewness and excess kurtosis.
-  4. Influence: Cook's distance; dose coefficient without facilities with D > 4/n.
-
-Outputs: data/processed/diagnostics/*.csv + diagnostics_summary.txt, reports/figures/diagnostics_residuals.png
+For each outcome, plot the residuals and compare the dose estimate across refits.
 """
 import io
 import os
@@ -85,8 +77,8 @@ def main():
         with np.errstate(invalid="ignore", divide="ignore"):
             infl = res.get_influence()
             cook = infl.cooks_distance[0]
-        # a facility alone in its state (AK, HI) is fitted exactly by the state effect: leverage = 1 up to rounding,
-        # residual 0, no influence on the other coefficients. Its Cook's D is undefined or numerically huge, so it is kept
+        # A state with one facility gives it unit leverage. Leave Cook's D missing
+        # and retain the facility in the sensitivity fit.
         lev1 = infl.hat_matrix_diag > 1 - 1e-8
         cook = np.where(lev1, np.nan, cook)
         n_lev1 = int(lev1.sum())

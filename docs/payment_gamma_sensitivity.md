@@ -17,4 +17,4 @@ Intervals use state-clustered sandwich covariance with the CR1 correction. Gamma
 
 ## Reproduction
 
-From the repository root run `python src/payment_gamma_sensitivity.py` after building Model A. The Gamma fit converged in 15 iterations. The script checks the OLS contrasts against the saved primary table, the Gamma covariance against the clustered score calculation and the dollar contrasts and gradients against a separate log-link calculation.
+Run `python src/payment_gamma_sensitivity.py` after fitting Model A. The Gamma fit converged in 15 iterations.

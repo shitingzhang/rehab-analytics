@@ -1,10 +1,4 @@
-"""
-irf_common.py - helpers shared by 04_analysis.py and 05_screening.py (keep it in src/ next to them).
-
-  * regression engine: OLS / WLS with cluster-robust (CR1) standard errors, Holm adjustment
-  * data loading from data/processed/irf_analytics.db and construction of the analysis variables
-  * impairment-group shares with a configurable fill value for CMS-suppressed counts
-"""
+"""Read the facility database, prepare covariates, and fit state-clustered regressions."""
 import sqlite3
 import os
 
@@ -113,8 +107,10 @@ def load_facility() -> pd.DataFrame:
 
 
 def impairment_shares(d: pd.DataFrame, fill: float = SUPPRESSED_FILL_DB, merge: bool = MERGE_SPINAL):
-    """Percent of patients in each impairment group. Suppressed cells (true 1-10) take value `fill`.
-    Returns None if `fill` differs from the stored one and the per-group suppression flags are missing."""
+    """Recalculate historical impairment shares with the requested fill value.
+
+    The historical flags cover suppressed and unavailable counts. Changing the
+    fill requires a flag for each group. Return None if those flags are missing."""
     groups = [c[len("dx_pct_"):] for c in d.columns if c.startswith("dx_pct_")]
     cnt = pd.DataFrame({g: d[f"dx_n_{g}"] for g in groups})
     if fill != SUPPRESSED_FILL_DB:
@@ -164,7 +160,7 @@ def imp_terms(d: pd.DataFrame):
     return sorted(c for c in d.columns if c.startswith("imp10_"))
 
 def sample_flow(d: pd.DataFrame, ycol: str, terms, out=print):
-    """Print which variables remove facilities from a complete-case analysis (never drop rows silently)."""
+    """Report the remaining facility count after each complete-case requirement."""
     names = list(terms) + ["state"]
     base = d[d[ycol].notna()]
     miss = base[names].isna().sum().sort_values(ascending=False)

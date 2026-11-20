@@ -147,10 +147,8 @@ def main():
         "",
         "## Reproduction",
         "",
-        f"From the repository root run `python src/payment_gamma_sensitivity.py` after building Model A. "
-        f"The Gamma fit converged in {fit.fit_history['iteration']} iterations. "
-        "The script checks the OLS contrasts against the saved primary table, the Gamma covariance against the clustered "
-        "score calculation and the dollar contrasts and gradients against a separate log-link calculation.",
+        "Run `python src/payment_gamma_sensitivity.py` after fitting Model A. "
+        f"The Gamma fit converged in {fit.fit_history['iteration']} iterations.",
         "",
     ]
     Path("docs/payment_gamma_sensitivity.md").write_text(

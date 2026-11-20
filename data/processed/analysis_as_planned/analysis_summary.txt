@@ -219,4 +219,4 @@ ownership_type  facilities  mean_rsrr  above_99_8  below_99_8  above_95  pct_abo
     Non-profit         509   9.189391           1           3         4             0.2
      Physician           6   9.611667           0           0         0             0.0
 
-Caveat: facility-level associations; measure windows differ; not causal. Only the dose rows above are confirmatory.
+The original plan specified the three dose comparisons. Other estimates are exploratory.

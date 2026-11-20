@@ -1,4 +1,4 @@
-"""Post-audit construction, isolated from the unchanged legacy preparation code."""
+"""Construct therapy shares from reported minutes and impairment shares from CMS counts."""
 
 from pathlib import Path
 
@@ -162,7 +162,7 @@ def construct(root=Path(".")):
     key = "CMS Certification Number (CCN)"
     raw[key] = raw[key].map(mapping).fillna(raw[key])
     tables = condition_tables(raw, groups)
-    # Remove every legacy impairment count/share/flag before installing corrected fields.
+    # Rebuild impairment fields from counts and footnotes.
     d = d.drop(
         columns=[
             c for c in d if c.startswith(("dx_n_", "dx_pct_", "dx_supp_", "imp10_"))
@@ -189,7 +189,7 @@ def construct(root=Path(".")):
     exposures = minute_exposures(pac)
     for term in EXPOSURES:
         d[term] = exposures[term].reindex(d.ccn).to_numpy()
-    # Keep the ratio as a historical field only; it never enters the new model lists.
+    # Label the historical covered-day ratio separately from the therapy shares.
     d = d.rename(columns={"therapy10": "legacy_recorded_minutes_per_covered_day_div10"})
     return d, tables["audit"]
 

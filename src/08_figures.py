@@ -1,9 +1,5 @@
-"""
-08_figures.py - README figures that explain the sample. Run from the project root after 02_build_database.py:
-    python src/08_figures.py
-  Figure 1  reports/figures/sample_flow.png        from the PAC file to the analysis samples of v1.2 and v1.3
-  Figure 2  reports/figures/missingness_pattern.png facilities with suppressed dual/rural values
-Every number is computed from the data. Uses facility identifiers and the presence of a DTC rate only, no outcome values.
+"""Plot sample exclusions and suppression of dual-eligible and rural percentages
+for the two historical cohorts.
 """
 import os
 

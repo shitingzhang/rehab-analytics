@@ -1,9 +1,4 @@
-"""Fail-closed receipts for the supported 01 -> 02 -> 12/13 CLI chain.
-
-Receipts bind content, not scientific validity. Lower-level cleaning/build functions
-remain usable in synthetic tests; only the CLI wrappers issue production receipts.
-No automatic signing of existing files, cross-file rollback or crash durability claim.
-"""
+"""Record input and output hashes for the CMS cleaning and database steps."""
 from contextlib import contextmanager
 import hashlib
 import json
@@ -119,7 +114,6 @@ def recorded_stage(stage, root=Path('.')):
         try:
             write_receipt(root, receipt, {**base, 'status': 'failed', 'error': f'{type(exc).__name__}: {exc}'})
         except OSError:
-            # A retained incomplete/mismatched receipt also fails closed.
             pass
         raise
     finally:

@@ -1,4 +1,4 @@
-"""Screening batch validation and latest-attempt reads; no screening rule changes."""
+"""Check the facility lists and output files for a completed screening run."""
 import json
 from pathlib import Path
 import numpy as np

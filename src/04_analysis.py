@@ -1,16 +1,7 @@
-"""
-04_analysis.py  (implements docs/analysis_plan.md, v1.3)
-Run from the project root after 02_build_database.py:   python src/04_analysis.py [--check] [--as-planned]
---as-planned reproduces the v1.2 run (suppressed dual / rural % left missing, complete cases) into separate folders.
+"""Fit the historical models of therapy minutes per Medicare-covered day.
 
-RQ-A  Dose : therapy minutes per covered day  ->  DTC rate, readmission RSRR, standardized payment per stay
-RQ-B  Mode and mix (exploratory): group/concurrent share, co-treatment share, PT and SLP shares, ownership
-Primary model: OLS, state fixed effects, state-clustered (CR1) standard errors, one fixed sample per outcome.
-Confirmatory family: the therapy-dose coefficient for the three outcomes, Holm-adjusted.
-Everything else is exploratory. Pre-specified sensitivity analyses are run for every outcome.
-Facility-level, observational, windows differ by measure: associations, not causal effects.
-
-Outputs: data/processed/analysis/*.csv + analysis_summary.txt, reports/figures/*.png
+The primary tests compare the dose coefficient across three outcomes using Holm
+adjustment. The --as-planned option leaves suppressed dual and rural shares missing.
 """
 import io
 import os
@@ -248,7 +239,7 @@ def figures(ladder, sens):
         ax.axvline(0, color="k", lw=0.8)
         ax.set_yticks(yy)
         ax.set_yticklabels(g["analysis"], fontsize=7)
-        ax.set_title(f"Sensitivity:\n{OUTCOMES[key][2]}", fontsize=9)   # two lines: long titles were clipped
+        ax.set_title(f"Sensitivity:\n{OUTCOMES[key][2]}", fontsize=9)   # wrap long outcome names
         ax.set_xlabel("Dose coefficient (+10 min/day, 95% CI)", fontsize=8)
     fig.tight_layout()
     fig.savefig(f"{FIG_DIR}/sensitivity_dose.png", dpi=150)
@@ -312,7 +303,7 @@ def main():
     summ.to_csv(f"{OUT_DIR}/funnel_summary_by_ownership.csv", index=False)
     out("\n=== Readmission outliers by ownership (over-dispersion-adjusted 99.8% limit) ===")
     out(summ.to_string(index=False))
-    out("\nCaveat: facility-level associations; measure windows differ; not causal. Only the dose rows above are confirmatory.")
+    out("\nThe original plan specified the three dose comparisons. Other estimates are exploratory.")
     with open(f"{OUT_DIR}/analysis_summary.txt", "w", encoding="utf-8") as fh:
         fh.write(buf.getvalue())
     print(f"\nSaved tables to {OUT_DIR}/ and figures to {FIG_DIR}/")

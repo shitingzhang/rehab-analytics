@@ -1,8 +1,6 @@
-"""Strict CR1 input/output checks for current analyses; legacy engine stays unchanged.
-No row/term removal or estimator redesign. Zero weights require explicit upstream handling.
-Rank uses numpy's default tolerance. Full-rank weighted designs are solved directly by SVD;
-CR1 uses cluster-summed observation influences, avoiding a squared-condition Gram inverse.
-This does not eliminate intrinsic near-collinearity or establish small-cluster validity.
+"""Fit full-rank OLS and weighted least squares with state-clustered CR1 errors.
+
+The solver uses a singular value decomposition of the weighted design matrix.
 """
 
 import warnings
@@ -50,10 +48,9 @@ def ols_cluster(y, X, groups, w=None):
         raise ValueError("Weighted inputs overflowed")
     if np.linalg.matrix_rank(Xw) != k:
         raise ValueError(
-            "Rank-deficient weighted design; do not silently remove model terms"
+            "Weighted design matrix is rank deficient"
         )
-    # Do not square the condition number or apply a second, incompatible cutoff.
-    # The full-rank check above uses NumPy's existing matrix_rank tolerance.
+    # Solve directly from the weighted design to avoid forming its cross-product.
     U, singular, Vt = np.linalg.svd(Xw, full_matrices=False)
     inverse = (Vt.T / singular) @ U.T
     beta = inverse @ yw

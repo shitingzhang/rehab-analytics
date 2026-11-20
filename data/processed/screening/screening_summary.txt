@@ -6,7 +6,7 @@ Facilities screened: 1,067 of 1,165 (complete case-mix, ALOS and DTC). Case-mix 
 R-squared of the expected-value models: ALOS 0.23, DTC 0.11
 Primary rule: O/E ALOS >= 1.20 and DTC residual <= -2.8 points (the 25th percentile) -> 11 facilities flagged (1.0%)
 Bootstrap (500 refits): 7 facilities have flag frequency >= 80% (legacy robust_flag); 7 also meet the original primary rule; 0 do not meet the original primary rule. 19 primary-unflagged facilities are flagged in some refits.
-Refit frequency holds each original facility's observed outcomes fixed; expected values and the DTC-residual percentile cutoff are recalculated in each refit. It is not a probability of poor care, an outcome uncertainty interval, or external validation.
+Each refit keeps observed outcomes fixed and recalculates expected outcomes and the discharge cutoff.
 
 === Sensitivity of the screen to its thresholds ===
  alos_ratio_min  dtc_percentile  flagged  jaccard_with_primary
@@ -21,7 +21,7 @@ Refit frequency holds each original facility's observed outcomes fixed; expected
 Funnel-plot readmission outliers (above the adjusted 99.8% limit): 9 facilities; 0 of them are also flagged by this screen.
 Earlier peer-median rule (review_flag in 01): 25 facilities; 9 also flagged here; Jaccard = 0.33
 
-=== Descriptive flag rates by group (differences alone do not establish bias or fairness) ===
+=== Flag rates by facility group ===
       dimension                 group  facilities  flagged  robust  flag_rate_%  robust_rate_%
       ownership            For profit         464        2       1          0.4            0.2
       ownership            Government          90        1       0          1.1            0.0
@@ -39,4 +39,4 @@ dual-eligible %            dual: high         356        6       3          1.7 
  volume (stays)           volume: mid         354        3       2          0.8            0.6
  volume (stays)          volume: high         356        0       0          0.0            0.0
 
-Reminder: this list prioritises facilities for a closer look. It does not establish that any facility is inefficient.
+Flagged facilities warrant individual review.

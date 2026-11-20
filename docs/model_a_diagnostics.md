@@ -1,6 +1,6 @@
 # Model A diagnostics
 
-These post-results checks use the complete-composition sample, the original covariates and state fixed effects. All fitted coefficients, state-clustered CR1 standard errors and 95% intervals reproduced the saved Model A values within an absolute tolerance of 0.000001. See the [main estimates](../README.md#results).
+We examined the residuals and influence of individual facilities after fitting Model A. The sample and covariates match the [main analysis](../README.md#results).
 
 ## Residuals and influence
 
@@ -18,7 +18,7 @@ Cook’s D uses the full OLS design and residual mean square. The dashed line in
 
 ## Single-facility deletion
 
-Ranges use the exact OLS deletion identity for each facility with leverage below one. They describe sensitivity of the point estimate to one facility at a time. They do not provide confidence intervals or measure the influence of deleting a whole state.
+Ranges use the exact OLS deletion identity for each facility with leverage below one. Each range gives the smallest and largest estimates after omitting one facility at a time.
 
 | Outcome | Exposure | Full estimate | Smallest deletion estimate | Largest deletion estimate |
 |---|---|---:|---:|---:|

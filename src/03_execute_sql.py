@@ -1,14 +1,7 @@
-"""
-03_execute_sql.py
-Runs every query in sql/analytical_queries.sql against data/processed/irf_analytics.db,
-prints each result, and exports an immutable batch under data/processed/sql_outputs/runs/.
-run_status.json identifies the last complete batch; root-level CSVs are legacy snapshots.
-Use --show-current only for a successful latest attempt; use --show-last-successful
-explicitly for a retained historical batch after a failed or incomplete attempt.
+"""Run the descriptive queries in sql/analytical_queries.sql and export a CSV for each.
 
-The SQL file is the single source of truth (commit it to GitHub). Titles are read from the
-"-- Query NN: ..." comment above each statement, so reordering queries never mislabels them.
-Run from the project root:  python src/03_execute_sql.py
+Use --show-current to locate the results of a successful latest run, or
+--show-last-successful to retrieve the most recent completed export.
 """
 import os
 import re
@@ -154,7 +147,7 @@ def current_result_dir(output_root=None):
 
 
 def last_successful_result_dir(output_root=None):
-    """Explicit audit/recovery access; does not establish success of the latest attempt."""
+    """Return the last completed export, including after a later failed run."""
     root = Path(SQL_OUT_DIR if output_root is None else output_root)
     status = json.loads((root / "run_status.json").read_text(encoding="utf-8"))
     return _result_from_status(root, status)
@@ -186,7 +179,6 @@ def execute_sql_analytics() -> None:
                 print(f"Could not record failure status: {status_error}; inspect run_status.json.", file=sys.stderr)
             raise
     print(f"\nPublished {len(ids)} queries as one complete batch: {root / reference['directory']}")
-    print("Use run_status.json/current_result_dir(), not the root-level legacy CSVs.")
 
 
 def _execute_sql_analytics(run_id):
@@ -201,9 +193,7 @@ def _execute_sql_analytics(run_id):
     root = Path(SQL_OUT_DIR)
     (root / "runs").mkdir(exist_ok=True)
     batch = root / "runs" / run_id
-    print("=" * 88)
-    print("EXECUTING INPATIENT REHABILITATION FACILITY SQL ANALYTICS")
-    print("=" * 88)
+    print("Running facility queries")
     with tempfile.TemporaryDirectory(dir=root, prefix=".staging-") as staging:
         stage = Path(staging)
         with closing(sqlite3.connect(db.as_uri() + "?mode=ro", uri=True)) as conn:
@@ -243,7 +233,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     readers = parser.add_mutually_exclusive_group()
     readers.add_argument("--show-current", action="store_true", help="Print validated results only if the latest SQL attempt succeeded")
-    readers.add_argument("--show-last-successful", action="store_true", help="Explicitly read the retained historical success; not proof of a successful rerun")
+    readers.add_argument("--show-last-successful", action="store_true", help="Show the most recent completed SQL export")
     args = parser.parse_args()
     if args.show_current:
         print(current_result_dir())
