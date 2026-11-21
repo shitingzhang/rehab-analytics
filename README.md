@@ -16,6 +16,8 @@ The table follows the first row of the figure across the three outcomes. Each es
 
 The two rate associations met the Benjamini–Hochberg criterion across the 12 primary comparisons. The co-treatment estimate for readmission was smaller (+0.092 points per five-point higher share, adjusted q = 0.053). Intervals for physical therapy and speech-language pathology shares included zero for all three outcomes. [All 12 estimates and intervals](data/processed/mode_mix_post_audit/primary_12.csv)
 
+One hypothesis for patient-level follow-up is that facilities using more group or concurrent therapy admit more patients with better baseline mobility who are more likely to return home. A second is that earlier discharge may be associated with more readmissions, which could be tested using linked records on length of stay, discharge destination and readmission.
+
 ## What the therapy measures capture
 
 CMS records therapy minutes during the first two weeks of a rehabilitation stay. The original analysis divided these minutes by Medicare-covered days across the entire stay. Two facilities with the same recorded minutes could therefore have different ratios simply because their patients stayed different lengths of time. After reviewing the earlier results, I changed the question to the composition of minutes within the recording window.

@@ -119,11 +119,6 @@ def build_results(dest):
     result.loc[primary, "q_bh_primary_12"] = multipletests(
         result.loc[primary, "p"], method="fdr_bh"
     )[1]
-    result["multiplicity_scope"] = np.where(
-        primary,
-        "BH across A 12 only (post-results)",
-        "unadjusted sensitivity; A q does not apply",
-    )
     membership = pd.concat(members, ignore_index=True)
     for _, sample_rows in membership.groupby("outcome"):
         ids = sample_rows.groupby("model")["ccn"].agg(set)

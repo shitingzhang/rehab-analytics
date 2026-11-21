@@ -6,12 +6,12 @@ The facility is the unit of observation. Download the four original CMS CSVs and
 
 | Filename | Release |
 |---|---|
-| `pac_irf_by_provider.csv` | FY2024 [Medicare Post-Acute Care Utilization, Inpatient Rehabilitation Facility by Geography and Provider](https://data.cms.gov/provider-summary-by-type-of-service/medicare-post-acute-care-hospice/medicare-post-acute-care-utilization-inpatient-rehabilitation-facility-by-geography-and-provider) |
+| `pac_irf_by_provider.csv` | FY 2024 (2023-10 to 2024-09), [Medicare Post-Acute Care Utilization, Inpatient Rehabilitation Facility by Geography and Provider](https://data.cms.gov/provider-summary-by-type-of-service/medicare-post-acute-care-hospice/medicare-post-acute-care-utilization-inpatient-rehabilitation-facility-by-geography-and-provider) |
 | `irf_general_information.csv` | September 2026 refresh, IRF General Information in the [CMS Provider Data Catalog](https://data.cms.gov/provider-data/topics/inpatient-rehabilitation-facilities) |
 | `irf_provider_data.csv` | September 2026 refresh, IRF Provider Data in the same catalog |
 | `irf_conditions.csv` | September 2026 refresh, IRF Conditions in the same catalog |
 
-The utilization file covers October 2023 through September 2024. The two risk-standardized quality measures cover October 2023 through September 2025. The payment outcome is standardized Medicare payment per stay.
+The utilization file covers October 2023 through September 2024. CMS released the September 2026 IRF refresh on September 23, 2026. The two risk-standardized quality measures cover October 2023 through September 2025. The payment outcome is standardized Medicare payment per stay. [CMS release notes](https://www.cms.gov/medicare/quality/inpatient-rehabilitation-facility/irf-quality-public-reporting)
 
 ## Sample and model comparisons
 
@@ -23,7 +23,7 @@ Of 1,165 facilities in the utilization file, 1,077 were linked to the outcome da
 | B | All otherwise eligible facilities | Omits impairment shares |
 | C | The Model A facilities | Omits impairment shares |
 
-Comparing B with C describes how estimates change when the sample is restricted. Comparing C with A shows the change when impairment shares enter the regression on the same facilities. All models include the four therapy measures, ownership, setting, age, HCC risk, dual eligibility and rural percentages and their suppression indicators, log stay volume and state fixed effects. The four exposure terms in A across the three outcomes form the 12-term multiple-testing family.
+Comparing B with C describes how estimates change when the sample is restricted. Comparing C with A shows the change when impairment shares enter the regression on the same facilities. All models include the four therapy measures, ownership, setting, age, HCC risk, dual eligibility and rural percentages and their suppression indicators, log stay volume and state fixed effects. The Benjamini–Hochberg adjustment covers the 12 Model A therapy estimates across the three outcomes. The `q_bh_primary_12` column is blank for Models B and C.
 
 ## Decisions that shaped the current study
 
