@@ -1,12 +1,14 @@
 import sys
 import unittest
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 import irf_common as legacy
+from mode_mix_io import load_inputs, load_outcome_sample
 from mode_mix_post_audit import checked_fit, condition_tables, minute_exposures
 
 
@@ -23,6 +25,29 @@ def fixture(values, notes=None, groups=None):
 
 
 class ConstructionTests(unittest.TestCase):
+    def test_report_inputs_preserve_identifiers_and_membership_order(self):
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cohort_csv = root / "cohort_private.csv"
+            cohort_csv.write_text("ccn\n000001\n000002\n", encoding="utf-8")
+            (root / "model_membership_private.csv").write_text(
+                "ccn,model,outcome\n000002,A,PAY\n000001,B,PAY\n000001,A,DTC\n000001,A,PAY\n",
+                encoding="utf-8",
+            )
+            (root / "primary_12.csv").write_text("outcome,term\nPAY,group10\n", encoding="utf-8")
+            cohort, members, _ = load_inputs(root)
+            sample = load_outcome_sample(cohort, members, "A", "PAY")
+            self.assertEqual(list(sample.index), ["000002", "000001"])
+            for invalid in ("000002", "999999", None):
+                with self.subTest(invalid=invalid):
+                    bad = members.copy()
+                    bad.loc[3, "ccn"] = invalid
+                    with self.assertRaises(ValueError):
+                        load_outcome_sample(cohort, bad, "A", "PAY")
+            cohort_csv.write_text("ccn\n000001\n000001\n", encoding="utf-8")
+            with self.assertRaises(ValueError):
+                load_inputs(root)
+
     def test_true_small_count_only(self):
         t = condition_tables(fixture(["100", "Less than 11"], ["-", "1"]), ["a", "b"])
         self.assertEqual(t["counts"].loc["000001", "b"], 5)

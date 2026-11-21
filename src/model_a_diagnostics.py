@@ -11,9 +11,9 @@ import pandas as pd
 from scipy import stats
 
 import irf_common as legacy
+from mode_mix_io import RESULTS_DIR, load_inputs, load_outcome_sample
 from mode_mix_post_audit import ADJUST, EXPOSURES, OUTCOMES, checked_fit
 
-ROOT = Path("data/processed/mode_mix_post_audit")
 FIG = Path("reports/figures")
 MODEL = "A_complete_composition"
 TITLES = {
@@ -36,7 +36,8 @@ BLUE = "#176373"
 
 
 def forest_plot(primary):
-    fig, axes = plt.subplots(1, 3, figsize=(10.8, 3.2), sharey=True)
+    fig, axes = plt.subplots(1, 3, figsize=(10.8, 3.2), sharey=True, layout="constrained")
+    fig.get_layout_engine().set(w_pad=0.16, h_pad=0.08)
     for ax, outcome in zip(axes, OUTCOMES):
         rows = primary.xs(outcome).loc[EXPOSURES]
         for i, row in enumerate(rows.itertuples()):
@@ -54,11 +55,11 @@ def forest_plot(primary):
         ha="left",
         fontweight="bold",
     )
-    fig.subplots_adjust(left=0.207, right=0.982, top=0.76, bottom=0.24, wspace=0.27)
-    fig.text(
-        0.022,
-        0.035,
+    fig.supxlabel(
         "Points show adjusted estimates. Lines show 95% confidence intervals.   pp = percentage points.",
+        x=0.022,
+        ha="left",
+        fontsize="medium",
     )
     fig.savefig(FIG / "model_a_forest.png", dpi=200, facecolor="white")
     plt.close(fig)
@@ -94,24 +95,13 @@ def diagnostic_row(axes, outcome, fitted, resid, cook):
 
 
 def main():
-    results_dir = ROOT
-    cohort = pd.read_csv(
-        results_dir / "cohort_private.csv", dtype={"ccn": str}
-    ).set_index("ccn")
-    if not cohort.index.is_unique:
-        raise ValueError("Multiple cohort rows for one facility")
-    members = pd.read_csv(
-        results_dir / "model_membership_private.csv", dtype={"ccn": str}
-    )
-    members = members.loc[members.model == MODEL]
-    saved = pd.read_csv(results_dir / "all_model_terms.csv").query("model == @MODEL")
-    primary = pd.read_csv(results_dir / "primary_12.csv").set_index(["outcome", "term"])
+    cohort, members, primary = load_inputs()
+    saved = pd.read_csv(RESULTS_DIR / "all_model_terms.csv").query("model == @MODEL")
     expected = pd.MultiIndex.from_product(
         [OUTCOMES, EXPOSURES], names=["outcome", "term"]
     )
     if (
-        not primary.index.is_unique
-        or set(primary.index) != set(expected)
+        set(primary.index) != set(expected)
         or not primary.model.eq(MODEL).all()
     ):
         raise ValueError("Unexpected primary reporting family")
@@ -124,10 +114,9 @@ def main():
         ax.set_title(title, fontweight="bold")
 
     for i, (outcome, y) in enumerate(OUTCOMES.items()):
-        ids = members.loc[members.outcome == outcome, "ccn"]
-        sample = cohort.loc[ids]
+        sample = load_outcome_sample(cohort, members, MODEL, outcome)
         eligible = cohort.dropna(subset=[y, "state", *terms])
-        if not ids.is_unique or set(ids) != set(eligible.index):
+        if set(sample.index) != set(eligible.index):
             raise ValueError(f"Model A membership mismatch for {outcome}")
         (fit, _, clusters), X, names = checked_fit(sample, y, terms)
         original = saved.loc[saved.outcome == outcome].set_index("term")
@@ -135,9 +124,8 @@ def main():
             raise ValueError(f"Model A terms differ for {outcome}")
         columns = ["coef", "se", "ci_low", "ci_high"]
         for reference in (original, primary.xs(outcome)):
-            np.testing.assert_allclose(
-                fit.loc[reference.index, columns], reference[columns], rtol=0, atol=1e-6
-            )
+            if not np.allclose(fit.loc[reference.index, columns], reference[columns], rtol=0, atol=1e-6):
+                raise ValueError(f"Refitted Model A estimates differ for {outcome}")
             if not (
                 reference.n.eq(len(sample)).all()
                 and reference.clusters.eq(clusters).all()
@@ -148,7 +136,7 @@ def main():
         fitted = X @ beta
         resid = sample[y].to_numpy() - fitted
         pinv = np.linalg.pinv(X)
-        hat = np.einsum("ij,ji->i", X, pinv)
+        hat = np.sum(X * pinv.T, axis=1)
         valid = (1 - hat) > 1e-10
         mse = resid @ resid / (n - k)
         cook = resid[valid] ** 2 * hat[valid] / (k * mse * (1 - hat[valid]) ** 2)
@@ -180,13 +168,13 @@ def main():
     report = [
         "# Model A diagnostics",
         "",
-        "We examined the residuals and influence of individual facilities after fitting Model A. "
-        "The sample and covariates match the [main analysis](../README.md#results).",
+        "Residuals and facility-level influence were examined for each Model A fit "
+        "using the same sample and covariates as the [main analysis](../README.md#results).",
         "",
         "## Residuals and influence",
         "",
-        "RMSE is the root mean squared residual in successive quartiles of fitted values. DTC and RSRR use percentage points. "
-        "PAY uses thousands of dollars per stay. Excess kurtosis is zero for a normal distribution.",
+        "RMSE is the root mean squared residual within each quartile of fitted values, expressed in percentage points "
+        "for DTC and RSRR and in thousands of dollars per stay for PAY. Excess kurtosis is zero for a normal distribution.",
         "",
         "| Outcome | Facilities | State groups | Residual skew | Excess kurtosis | RMSE Q1 / Q2 / Q3 / Q4 | Cook’s D > 4/n | Max D | Unit leverage |",
         "|---|---:|---:|---:|---:|---|---:|---:|---:|",
@@ -194,14 +182,15 @@ def main():
         "",
         "![Residuals, normal Q–Q plots and sorted Cook’s distances by outcome](../reports/figures/model_a_residual_influence.png)",
         "",
-        "Cook’s D uses the full OLS design and residual mean square. The dashed line in the right column marks 4/n. "
-        "The count identifies observations for closer inspection. Unit-leverage observations have undefined classical deletion "
-        "diagnostics and are excluded from the Cook summaries and deletion ranges. All facilities contributed to the reported fit.",
+        "Cook’s D was computed from the full OLS design matrix and residual mean square, with a dashed line at 4/n "
+        "in the right-hand panels to flag facilities for closer inspection. Facilities with leverage of one were included "
+        "in the reported fits. Their classical deletion diagnostics are undefined, so they are omitted from the "
+        "Cook’s D summaries and leave-one-out ranges.",
         "",
         "## Single-facility deletion",
         "",
-        "Ranges use the exact OLS deletion identity for each facility with leverage below one. "
-        "Each range gives the smallest and largest estimates after omitting one facility at a time.",
+        "For each predictor shown, the range gives the smallest and largest estimates after omitting one facility "
+        "at a time. These estimates use the exact OLS deletion identity for facilities with leverage below one.",
         "",
         "| Outcome | Exposure | Full estimate | Smallest deletion estimate | Largest deletion estimate |",
         "|---|---|---:|---:|---:|",
@@ -209,9 +198,10 @@ def main():
         "",
         "## Collinearity within states",
         "",
-        "Each non-state predictor was centered within state and regressed on the other centered predictors. "
-        "VIF is the ratio of its within-state sum of squares to its residual sum of squares. "
-        "The four therapy terms appear first. PT and SLP use OT as the reference discipline.",
+        "To assess collinearity after accounting for state fixed effects, each non-state predictor was centered within state "
+        "and regressed on the remaining centered predictors. The within-state VIF divides the centered predictor’s total sum "
+        "of squares by the residual sum of squares. The table lists the four therapy terms first, with OT as the "
+        "reference discipline for PT and SLP.",
         "",
         "| Predictor | DTC VIF | RSRR VIF | PAY VIF |",
         "|---|---:|---:|---:|",

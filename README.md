@@ -32,7 +32,7 @@ Each facility contributes one observation. The regressions adjust for patient mi
 
 ## Limitations
 
-Community discharge and readmission are separate facility-level measures. We cannot follow the same patients through both events or infer what would happen if a clinician changed an individual’s treatment. The outcome and therapy reporting periods overlap only partly. Smaller hospital-based units were more likely to have missing impairment data, and referral patterns and patient severity may still account for some of the observed differences.
+Because community discharge and readmission are reported separately at the facility level, these data cannot show whether the same patients experienced both outcomes or how an individual patient would respond to a change in treatment. The outcome and therapy reporting periods overlap only partly. Smaller hospital-based units were more likely to have missing impairment data, and referral patterns and patient severity may still account for some of the observed differences.
 
 ## Reproduce the analysis
 

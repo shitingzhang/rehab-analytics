@@ -1,10 +1,10 @@
 # Model A diagnostics
 
-We examined the residuals and influence of individual facilities after fitting Model A. The sample and covariates match the [main analysis](../README.md#results).
+Residuals and facility-level influence were examined for each Model A fit using the same sample and covariates as the [main analysis](../README.md#results).
 
 ## Residuals and influence
 
-RMSE is the root mean squared residual in successive quartiles of fitted values. DTC and RSRR use percentage points. PAY uses thousands of dollars per stay. Excess kurtosis is zero for a normal distribution.
+RMSE is the root mean squared residual within each quartile of fitted values, expressed in percentage points for DTC and RSRR and in thousands of dollars per stay for PAY. Excess kurtosis is zero for a normal distribution.
 
 | Outcome | Facilities | State groups | Residual skew | Excess kurtosis | RMSE Q1 / Q2 / Q3 / Q4 | Cook’s D > 4/n | Max D | Unit leverage |
 |---|---:|---:|---:|---:|---|---:|---:|---:|
@@ -14,11 +14,11 @@ RMSE is the root mean squared residual in successive quartiles of fitted values.
 
 ![Residuals, normal Q–Q plots and sorted Cook’s distances by outcome](../reports/figures/model_a_residual_influence.png)
 
-Cook’s D uses the full OLS design and residual mean square. The dashed line in the right column marks 4/n. The count identifies observations for closer inspection. Unit-leverage observations have undefined classical deletion diagnostics and are excluded from the Cook summaries and deletion ranges. All facilities contributed to the reported fit.
+Cook’s D was computed from the full OLS design matrix and residual mean square, with a dashed line at 4/n in the right-hand panels to flag facilities for closer inspection. Facilities with leverage of one were included in the reported fits. Their classical deletion diagnostics are undefined, so they are omitted from the Cook’s D summaries and leave-one-out ranges.
 
 ## Single-facility deletion
 
-Ranges use the exact OLS deletion identity for each facility with leverage below one. Each range gives the smallest and largest estimates after omitting one facility at a time.
+For each predictor shown, the range gives the smallest and largest estimates after omitting one facility at a time. These estimates use the exact OLS deletion identity for facilities with leverage below one.
 
 | Outcome | Exposure | Full estimate | Smallest deletion estimate | Largest deletion estimate |
 |---|---|---:|---:|---:|
@@ -37,7 +37,7 @@ Ranges use the exact OLS deletion identity for each facility with leverage below
 
 ## Collinearity within states
 
-Each non-state predictor was centered within state and regressed on the other centered predictors. VIF is the ratio of its within-state sum of squares to its residual sum of squares. The four therapy terms appear first. PT and SLP use OT as the reference discipline.
+To assess collinearity after accounting for state fixed effects, each non-state predictor was centered within state and regressed on the remaining centered predictors. The within-state VIF divides the centered predictor’s total sum of squares by the residual sum of squares. The table lists the four therapy terms first, with OT as the reference discipline for PT and SLP.
 
 | Predictor | DTC VIF | RSRR VIF | PAY VIF |
 |---|---:|---:|---:|

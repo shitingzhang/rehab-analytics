@@ -1,7 +1,8 @@
 # Model Diagnostics
 
-These diagnostics apply to the historical v1.3 models. The dose variable was a ratio of recorded first-two-week minutes to all covered days. Its time-window limitation is documented in the [project README](../README.md#research-update). Code: [`src/07_model_diagnostics.py`](../src/07_model_diagnostics.py);
-full output: [`diagnostics_summary.txt`](../data/processed/diagnostics/diagnostics_summary.txt).
+These diagnostics apply to the historical v1.3 models. The dose variable divided recorded therapy minutes from the first two weeks by all covered days, a mismatch explained in the [project README](../README.md#what-the-therapy-measures-capture).
+
+[`src/07_model_diagnostics.py`](../src/07_model_diagnostics.py) generates the [full diagnostic output](../data/processed/diagnostics/diagnostics_summary.txt).
 
 ## 1. Estimator check
 

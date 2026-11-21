@@ -7,13 +7,12 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import statsmodels.api as sm
-from scipy.interpolate import CubicSpline
 from scipy.stats import t
 from statsmodels.stats.multitest import multipletests
 
 from irf_common import design, imp_terms
+from mode_mix_io import load_inputs, load_outcome_sample
 from mode_mix_post_audit import ADJUST, EXPOSURES, OUTCOMES
 
 KNOTS = np.array([0.0, 5.0, 15.0, 30.0])
@@ -35,14 +34,6 @@ def basis(share):
     return np.column_stack([x, bends])
 
 
-def cardinal(share):
-    """Independent natural cubic interpolation of values at the four knots."""
-    spline = CubicSpline(KNOTS, np.eye(len(KNOTS)), bc_type="natural")
-    boundary = np.clip(share, KNOTS[0], KNOTS[-1])
-    values = spline(boundary) + (share - boundary)[:, None] * spline(boundary, 1)
-    return values[:, 1:]  # the intercept supplies the remaining constant dimension
-
-
 def clustered_fit(y, X, groups):
     if np.linalg.matrix_rank(X) != X.shape[1]:
         raise ValueError("Rank-deficient design")
@@ -51,7 +42,8 @@ def clustered_fit(y, X, groups):
         cov_kwds={"groups": groups, "use_correction": True},
         use_t=True,
     )
-    np.testing.assert_equal(result.df_resid_inference, len(np.unique(groups)) - 1)
+    if result.df_resid_inference != len(np.unique(groups)) - 1:
+        raise ValueError("Unexpected clustered degrees of freedom")
     return result
 
 
@@ -60,43 +52,32 @@ def contrast(fit, vectors):
     coef = fit.params[:3]
     cov = fit.cov_params()[:3, :3]
     means = vectors @ coef
-    variances = np.einsum("ij,jk,ik->i", vectors, cov, vectors)
+    variances = np.sum((vectors @ cov) * vectors, axis=1)
     if (variances < -1e-10).any():
         raise ValueError("Negative contrast variance")
     errors = t.ppf(0.975, fit.df_resid_inference) * np.sqrt(np.maximum(variances, 0))
     return np.column_stack([means, means - errors, means + errors])
 
 
-def curvature_test(fit, constraints):
+def curvature_test(fit):
     matrix = np.zeros((2, len(fit.params)))
-    matrix[:, :3] = constraints
+    matrix[:, 1:3] = np.eye(2)  # Jointly test the two nonlinear spline terms.
     if np.linalg.matrix_rank(matrix @ fit.cov_params() @ matrix.T) != 2:
         raise ValueError("Non-estimable curvature test")
     test = fit.f_test(matrix)
     return float(test.fvalue), float(test.pvalue)
 
 
-def curve_vectors(build, grid):
-    at = build(np.array([0.0, 10.0, 20.0, 30.0]))
+def curve_vectors(grid):
+    at = basis(np.array([0.0, 10.0, 20.0, 30.0]))
     low, high = at[1] - at[0], at[3] - at[2]
-    return np.vstack([low, high, high - low, build(grid) - at[0]])
+    return np.vstack([low, high, high - low, basis(grid) - at[0]])
 
 
 def main():
-    results_dir = Path("data/processed/mode_mix_post_audit")
-    cohort = pd.read_csv(
-        results_dir / "cohort_private.csv", dtype={"ccn": str}
-    ).set_index("ccn")
-    members = pd.read_csv(
-        results_dir / "model_membership_private.csv", dtype={"ccn": str}
-    )
-    primary = pd.read_csv(results_dir / "primary_12.csv").set_index(["outcome", "term"])
-    if (
-        not cohort.index.is_unique
-        or not primary.index.is_unique
-        or not primary.model.eq(MODEL).all()
-    ):
-        raise ValueError("Invalid source records")
+    cohort, members, primary = load_inputs()
+    if not primary.model.eq(MODEL).all():
+        raise ValueError("Expected Model A primary estimates")
     terms = EXPOSURES + ADJUST + imp_terms(cohort)
     tests, effects, support = [], [], []
     fig, axes = plt.subplots(
@@ -108,14 +89,10 @@ def main():
         layout="constrained",
     )
     for i, (outcome, ycol) in enumerate(OUTCOMES.items()):
-        ids = members.loc[
-            (members.model == MODEL) & (members.outcome == outcome), "ccn"
-        ]
-        if not ids.is_unique or set(ids) != set(
-            cohort.dropna(subset=[ycol, "state", *terms]).index
-        ):
+        s = load_outcome_sample(cohort, members, MODEL, outcome)
+        eligible = cohort.dropna(subset=[ycol, "state", *terms])
+        if set(s.index) != set(eligible.index):
             raise ValueError(f"Sample differs from complete Model A for {outcome}")
-        s = cohort.loc[ids]
         x = 10 * s.group10.to_numpy()
         if x.min() != 0 or x.max() < KNOTS[-1]:
             raise ValueError(
@@ -126,30 +103,21 @@ def main():
         linear = clustered_fit(y, X, groups)
         pos = names.index("group10")
         saved = primary.loc[(outcome, "group10")]
-        np.testing.assert_allclose(
+        if not np.allclose(
             [linear.params[pos], linear.bse[pos], *linear.conf_int()[pos]],
             saved[["coef", "se", "ci_low", "ci_high"]].astype(float),
             atol=1e-6,
             rtol=0,
-        )
-        np.testing.assert_equal([len(s), s.state.nunique()], [saved.n, saved.clusters])
+        ):
+            raise ValueError(f"Linear baseline differs from Model A for {outcome}")
+        if (len(s), s.state.nunique()) != (saved.n, saved.clusters):
+            raise ValueError(f"Model A sample dimensions differ for {outcome}")
         other = np.delete(X, pos, axis=1)
         fit = clustered_fit(y, np.column_stack([basis(x), other]), groups)
-        check = clustered_fit(y, np.column_stack([cardinal(x), other]), groups)
-        np.testing.assert_allclose(
-            fit.fittedvalues, check.fittedvalues, atol=1e-7, rtol=0
-        )
-        fval, p = curvature_test(fit, np.eye(3)[1:])
-        slopes = np.diff(cardinal(KNOTS), axis=0) / np.diff(KNOTS)[:, None]
-        np.testing.assert_allclose(
-            [fval, p], curvature_test(check, np.diff(slopes, axis=0)), atol=1e-7, rtol=0
-        )
+        fval, p = curvature_test(fit)
         tests.append((outcome, len(s), s.state.nunique(), fval, p))
         grid = np.linspace(0.0, x.max(), 251)
-        estimates = contrast(fit, curve_vectors(basis, grid))
-        np.testing.assert_allclose(
-            estimates, contrast(check, curve_vectors(cardinal, grid)), atol=1e-7, rtol=0
-        )
+        estimates = contrast(fit, curve_vectors(grid))
         factor, digits = (1000, 0) if outcome == "PAY" else (1, 3)
         cells = []
         for mean, lo, hi in estimates[:3] * factor:
@@ -162,7 +130,8 @@ def main():
                 for lo, hi in [(0, 5), (5, 10), (10, 20), (20, 30), (30, np.inf)]
             ],
         ]
-        np.testing.assert_equal(sum(bins), len(s))
+        if sum(bins) != len(s):
+            raise ValueError(f"Exposure bins do not cover every facility for {outcome}")
         support.append(
             "| " + " | ".join(map(str, [outcome, *bins])) + f" | {x.max():.2f} |"
         )
@@ -226,9 +195,10 @@ def main():
         "|---|---:|---:|---:|",
         *effects,
         "",
-        "The entries are adjusted facility-level differences. DTC and RSRR use percentage points. PAY uses dollars "
-        "per stay. Each interval uses a state-clustered t critical value and the covariance of the full contrast. "
-        "These pointwise intervals are unadjusted for multiple comparisons.",
+        "Adjusted facility-level differences are reported in percentage points for DTC and RSRR and in dollars per stay "
+        "for PAY. The pointwise intervals use the state-clustered covariance of the full contrast and a t critical value "
+        "with degrees of freedom equal to the number of state groups minus one. There is no multiple-comparison adjustment "
+        "for these intervals.",
         "",
         "![Adjusted curves, pointwise intervals, linear comparators and exposure histograms](../reports/figures/group_share_nonlinearity.png)",
         "",

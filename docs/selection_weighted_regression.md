@@ -1,10 +1,10 @@
 # How much do treatment-share estimates move after reweighting the sample?
 
-Facilities with complete impairment data differ in size and setting from the broader eligible population. This post-results check gives each retained facility the inverse of its stratum’s observed retention fraction and refits the three original Model A regressions. The target for each outcome is its Model B eligible population.
+Facilities with complete impairment data differ in size and setting from the broader eligible population. This post-results check refits each Model A regression with weights that match the Model B eligible population on the joint distribution of facility setting and stay-volume quartile.
 
 ## Treatment-share estimates
 
-DTC (community discharge) and RSRR (readmission) are measured in percentage points. PAY is standardized Medicare payment in dollars per stay. Each change is calculated before rounding. PT and SLP are relative to OT.
+DTC (community discharge) and RSRR (readmission) are reported in percentage points, and standardized Medicare payment (PAY) is reported in dollars per stay. Each change is calculated before rounding. PT and SLP are relative to OT.
 
 | Outcome | Higher share | Original A [95% CI] | Weighted A [95% CI] | Change |
 |---|---|---:|---:|---:|
@@ -21,7 +21,7 @@ DTC (community discharge) and RSRR (readmission) are measured in percentage poin
 | PAY | PT share (+5 pp) | +89 [-459, +637] | +103 [-457, +663] | +14 |
 | PAY | SLP share (+5 pp) | +246 [-256, +748] | +278 [-261, +817] | +32 |
 
-Both fits use the same retained facilities, adjustment variables and state fixed effects. Pointwise intervals use state-clustered CR1 standard errors and a t critical value with the number of groups minus one degrees of freedom. Weighted intervals condition on the observed weights. The last column describes movement of paired point estimates. The original BH adjustment applies only to the original primary family.
+Both fits use the same retained facilities, adjustment variables and state fixed effects. Pointwise intervals use state-clustered CR1 standard errors and a t critical value with the number of groups minus one degrees of freedom. For the weighted fit, these intervals condition on the observed weights. The last column shows how the point estimate changes for each comparison. The original BH adjustment applies only to the primary Model A estimates.
 
 ## Who is represented by the weights?
 
@@ -31,7 +31,7 @@ Both fits use the same retained facilities, adjustment variables and state fixed
 | RSRR | 938 | 1063 | 51 | 1.000–1.387 | 924.1 |
 | PAY | 938 | 1065 | 51 | 1.000–1.393 | 923.8 |
 
-Stay-volume quartiles are defined within the eligible population for each outcome. Pairing each quartile with facility setting gives eight strata. Each retained facility receives its stratum’s eligible count divided by its retained count. Weighted counts reproduce every target cell. The effective sample size summarizes weight dispersion.
+For each outcome, stay-volume quartiles within the Model B eligible population were crossed with facility setting (hospital-based unit or freestanding facility) to form eight strata. Each retained facility was weighted by the ratio of eligible to retained facilities in its stratum. The weights sum to the eligible count in each stratum, and Kish’s effective sample size summarizes how much the weights vary.
 
 | Outcome | Setting | Stay quartile | Retained | Eligible | Weight |
 |---|---|---|---:|---:|---:|

@@ -18,7 +18,7 @@ The state-clustered CR1 Wald F test compares the curve with a straight line by j
 | RSRR | +0.142 [-0.012, +0.295] | +0.287 [+0.096, +0.477] | +0.145 [-0.124, +0.414] |
 | PAY | +402 [-652, +1456] | -225 [-589, +139] | -627 [-1594, +340] |
 
-The entries are adjusted facility-level differences. DTC and RSRR use percentage points. PAY uses dollars per stay. Each interval uses a state-clustered t critical value and the covariance of the full contrast. These pointwise intervals are unadjusted for multiple comparisons.
+Adjusted facility-level differences are reported in percentage points for DTC and RSRR and in dollars per stay for PAY. The pointwise intervals use the state-clustered covariance of the full contrast and a t critical value with degrees of freedom equal to the number of state groups minus one. There is no multiple-comparison adjustment for these intervals.
 
 ![Adjusted curves, pointwise intervals, linear comparators and exposure histograms](../reports/figures/group_share_nonlinearity.png)
 
