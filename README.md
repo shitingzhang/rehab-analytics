@@ -40,6 +40,7 @@ Because community discharge and readmission are reported separately at the facil
 
 - **Current study (938 facilities).** Run `01` to clean and link the CMS files, `02` to build the database, then `12` to fit the therapy composition models.
 - **Historical dose and screening analyses.** After `02`, run `04` and `05` with `--as-planned` for the original specification and again without the flag for the revised specification. The local script `06_compare_versions.py` compares the two sets of results and is planned for a later release.
+- **Historical discharge function.** Run `09` after `02` to reproduce the exploratory estimates for discharge function, self-care and mobility. [Results and forest plot](docs/function_outcomes.md)
 
 Place the [four CMS source files](docs/study_design.md#source-files) in `data/raw/`. From the repository root run:
 

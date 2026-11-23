@@ -1,0 +1,130 @@
+EXPLORATORY (added after the v1.2/v1.3 results were seen). Function measures: CY2025; therapy data: FY2024.
+SD of historical therapy ratio = 23.8 units
+
+=== Discharge function score (% meeting expected): n = 1,061 of 1,073 facilities with the outcome, 51 states; outcome mean 64.5, SD 18.9 ===
+    Sample flow (i_026_01_obs_rate): 1,073 facilities have the outcome
+      Dual-eligible % (+10 pts): missing in 8; 1,065 remain after requiring it (-8)
+      Therapy dose (+10 min/day): missing in 6; 1,061 remain after requiring it (-4)
+      Co-treatment share (+5 pts): missing in 6; 1,061 remain after requiring it (-0)
+      Group/concurrent share (+10 pts): missing in 6; 1,061 remain after requiring it (-0)
+      SLP share of minutes (+5 pts): missing in 6; 1,061 remain after requiring it (-0)
+      PT share of minutes (+5 pts): missing in 6; 1,061 remain after requiring it (-0)
+      complete cases: 1,061
+
+=== Discharge self-care (% meeting expected): n = 1,061 of 1,073 facilities with the outcome, 51 states; outcome mean 60.3, SD 19.9 ===
+    Sample flow (i_011_05_obs_rate): 1,073 facilities have the outcome
+      Dual-eligible % (+10 pts): missing in 8; 1,065 remain after requiring it (-8)
+      Therapy dose (+10 min/day): missing in 6; 1,061 remain after requiring it (-4)
+      Co-treatment share (+5 pts): missing in 6; 1,061 remain after requiring it (-0)
+      Group/concurrent share (+10 pts): missing in 6; 1,061 remain after requiring it (-0)
+      SLP share of minutes (+5 pts): missing in 6; 1,061 remain after requiring it (-0)
+      PT share of minutes (+5 pts): missing in 6; 1,061 remain after requiring it (-0)
+      complete cases: 1,061
+
+=== Discharge mobility (% meeting expected): n = 1,061 of 1,073 facilities with the outcome, 51 states; outcome mean 57.0, SD 20.7 ===
+    Sample flow (i_012_06_obs_rate): 1,073 facilities have the outcome
+      Dual-eligible % (+10 pts): missing in 8; 1,065 remain after requiring it (-8)
+      Therapy dose (+10 min/day): missing in 6; 1,061 remain after requiring it (-4)
+      Co-treatment share (+5 pts): missing in 6; 1,061 remain after requiring it (-0)
+      Group/concurrent share (+10 pts): missing in 6; 1,061 remain after requiring it (-0)
+      SLP share of minutes (+5 pts): missing in 6; 1,061 remain after requiring it (-0)
+      PT share of minutes (+5 pts): missing in 6; 1,061 remain after requiring it (-0)
+      complete cases: 1,061
+
+=== Historical therapy ratio (+10 units) and function outcomes (percentage points, Holm across three) ===
+outcome    n   coef  ci_low  ci_high  per_sd     p  p_holm
+   FUNC 1061 -0.052  -0.522    0.418  -0.124 0.825     1.0
+   SELF 1061 -0.144  -0.566    0.279  -0.341 0.498     1.0
+    MOB 1061 -0.083  -0.554    0.388  -0.197 0.725     1.0
+
+=== Sensitivity estimates for the historical therapy ratio ===
+outcome                                   analysis    n   coef  ci_low  ci_high
+   FUNC as planned (v1.2): complete cases, no fill  538 -0.128  -0.786    0.530
+   FUNC      weighted by measure denominator (WLS) 1061  0.155  -0.378    0.689
+   FUNC                 without rural % and dual % 1061 -0.101  -0.600    0.399
+   SELF as planned (v1.2): complete cases, no fill  538 -0.200  -0.947    0.547
+   SELF      weighted by measure denominator (WLS) 1061  0.035  -0.491    0.561
+   SELF                 without rural % and dual % 1061 -0.216  -0.678    0.246
+    MOB as planned (v1.2): complete cases, no fill  538 -0.020  -0.705    0.664
+    MOB      weighted by measure denominator (WLS) 1061 -0.042  -0.539    0.455
+    MOB                 without rural % and dual % 1061 -0.132  -0.646    0.382
+
+=== Full model: Discharge function score (% meeting expected) (all terms exploratory, not adjusted for multiple comparisons) ===
+                                                                                    label   coef  ci_low  ci_high     p
+                                                     Historical therapy ratio (+10 units) -0.052  -0.522    0.418 0.825
+                                                         Group/concurrent share (+10 pts)  4.410   2.904    5.917 0.000
+                                                              Co-treatment share (+5 pts)  0.167  -1.120    1.455 0.795
+                                                             PT share of minutes (+5 pts) -0.364  -2.131    1.403 0.681
+                                                            SLP share of minutes (+5 pts)  0.852  -0.451    2.154 0.195
+                                                               For-profit (vs non-profit)  7.721   4.430   11.013 0.000
+                                                               Government (vs non-profit) -0.240  -3.755    3.275 0.891
+                                                          Physician-owned (vs non-profit) -5.631 -13.881    2.619 0.177
+                                                   Hospital-based unit (vs free-standing)  2.310  -2.295    6.915 0.319
+                                                                      HCC risk score (+1) -2.545  -6.022    0.931 0.148
+                                                                         Mean age (+1 yr) -0.241  -0.678    0.196 0.273
+                                                                Dual-eligible % (+10 pts) -2.114  -3.867   -0.360 0.019
+                                                                        Rural % (+10 pts) -0.382  -1.849    1.084 0.603
+                                                      Dual-eligible % suppressed (filled) -4.530  -7.747   -1.313 0.007
+                                                              Rural % suppressed (filled)  1.912  -1.203    5.027 0.223
+                           Impairment: brain disease or condition non traumatic (+10 pts)  1.479  -2.127    5.086 0.414
+                                             Impairment: brain injury traumatic (+10 pts) -0.329  -3.190    2.532 0.818
+                                              Impairment: hip or femur fracture (+10 pts)  0.002  -3.978    3.982 0.999
+Impairment: hip or knee replacement amputation or other bone or joint condition (+10 pts)  2.684   0.426    4.942 0.021
+                           Impairment: nervous system disorder excluding stroke (+10 pts)  0.899  -0.681    2.478 0.259
+                                                    Impairment: spinal cord any (+10 pts) -9.646 -13.468   -5.823 0.000
+                                                             Impairment: stroke (+10 pts) -1.192  -3.591    1.207 0.323
+                                                                      log(Medicare stays)  0.138  -1.459    1.735 0.863
+
+=== Full model: Discharge self-care (% meeting expected) (all terms exploratory, not adjusted for multiple comparisons) ===
+                                                                                    label   coef  ci_low  ci_high     p
+                                                     Historical therapy ratio (+10 units) -0.144  -0.566    0.279 0.498
+                                                         Group/concurrent share (+10 pts)  4.336   2.672    5.999 0.000
+                                                              Co-treatment share (+5 pts)  0.612  -0.662    1.885 0.339
+                                                             PT share of minutes (+5 pts) -1.740  -3.555    0.076 0.060
+                                                            SLP share of minutes (+5 pts)  0.287  -1.238    1.813 0.707
+                                                               For-profit (vs non-profit)  9.308   5.336   13.279 0.000
+                                                               Government (vs non-profit)  0.484  -3.596    4.563 0.813
+                                                          Physician-owned (vs non-profit)  2.834  -2.426    8.094 0.284
+                                                   Hospital-based unit (vs free-standing)  1.405  -3.876    6.685 0.595
+                                                                      HCC risk score (+1) -2.031  -5.695    1.632 0.271
+                                                                         Mean age (+1 yr)  0.015  -0.459    0.488 0.950
+                                                                Dual-eligible % (+10 pts) -1.603  -3.695    0.490 0.130
+                                                                        Rural % (+10 pts) -0.194  -1.701    1.312 0.797
+                                                      Dual-eligible % suppressed (filled) -5.903 -10.453   -1.352 0.012
+                                                              Rural % suppressed (filled)  2.382  -0.834    5.599 0.143
+                           Impairment: brain disease or condition non traumatic (+10 pts)  2.216  -1.767    6.199 0.269
+                                             Impairment: brain injury traumatic (+10 pts) -2.005  -5.433    1.422 0.246
+                                              Impairment: hip or femur fracture (+10 pts)  1.055  -2.704    4.814 0.575
+Impairment: hip or knee replacement amputation or other bone or joint condition (+10 pts)  3.318   0.909    5.726 0.008
+                           Impairment: nervous system disorder excluding stroke (+10 pts)  1.697   0.233    3.160 0.024
+                                                    Impairment: spinal cord any (+10 pts) -9.196 -12.826   -5.567 0.000
+                                                             Impairment: stroke (+10 pts) -0.350  -2.385    1.686 0.732
+                                                                      log(Medicare stays) -0.668  -2.335    0.998 0.424
+
+=== Full model: Discharge mobility (% meeting expected) (all terms exploratory, not adjusted for multiple comparisons) ===
+                                                                                    label    coef  ci_low  ci_high     p
+                                                     Historical therapy ratio (+10 units)  -0.083  -0.554    0.388 0.725
+                                                         Group/concurrent share (+10 pts)   4.602   2.621    6.583 0.000
+                                                              Co-treatment share (+5 pts)  -0.045  -1.506    1.416 0.951
+                                                             PT share of minutes (+5 pts)   0.308  -2.120    2.735 0.800
+                                                            SLP share of minutes (+5 pts)   1.024  -0.957    3.005 0.304
+                                                               For-profit (vs non-profit)   8.952   4.824   13.080 0.000
+                                                               Government (vs non-profit)  -2.591  -6.190    1.008 0.154
+                                                          Physician-owned (vs non-profit)   0.966  -6.897    8.828 0.806
+                                                   Hospital-based unit (vs free-standing)   2.935  -1.480    7.349 0.188
+                                                                      HCC risk score (+1)  -2.278  -6.075    1.519 0.234
+                                                                         Mean age (+1 yr)  -0.331  -0.807    0.145 0.168
+                                                                Dual-eligible % (+10 pts)  -2.069  -3.876   -0.262 0.026
+                                                                        Rural % (+10 pts)  -0.857  -2.341    0.628 0.252
+                                                      Dual-eligible % suppressed (filled)  -4.759  -8.567   -0.951 0.015
+                                                              Rural % suppressed (filled)   1.320  -2.347    4.988 0.473
+                           Impairment: brain disease or condition non traumatic (+10 pts)   2.727  -1.213    6.666 0.171
+                                             Impairment: brain injury traumatic (+10 pts)   1.898  -1.499    5.295 0.267
+                                              Impairment: hip or femur fracture (+10 pts)   1.443  -3.032    5.918 0.520
+Impairment: hip or knee replacement amputation or other bone or joint condition (+10 pts)   3.267   0.625    5.909 0.016
+                           Impairment: nervous system disorder excluding stroke (+10 pts)   1.219  -0.731    3.170 0.215
+                                                    Impairment: spinal cord any (+10 pts) -10.151 -14.559   -5.742 0.000
+                                                             Impairment: stroke (+10 pts)  -0.067  -2.617    2.484 0.958
+                                                                      log(Medicare stays)   0.968  -0.906    2.842 0.304
+
+Caveat: exploratory, facility-level, observational; function (CY2025) and therapy (FY2024) windows do not overlap.

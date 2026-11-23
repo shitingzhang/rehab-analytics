@@ -1,0 +1,4 @@
+outcome,analysis,term,n,coef,ci_low,ci_high,p,per_sd,p_holm
+FUNC,primary (v1.3 model),therapy10,1061,-0.0521,-0.5225,0.4182,0.8247,-0.1239,1.0
+SELF,primary (v1.3 model),therapy10,1061,-0.1436,-0.5663,0.2791,0.4982,-0.3413,1.0
+MOB,primary (v1.3 model),therapy10,1061,-0.083,-0.5538,0.3878,0.7247,-0.1973,1.0

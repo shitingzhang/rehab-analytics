@@ -1,0 +1,10 @@
+outcome,analysis,term,n,coef,ci_low,ci_high,p
+FUNC,"as planned (v1.2): complete cases, no fill",therapy10,538,-0.128,-0.7863,0.5303,0.6974
+FUNC,weighted by measure denominator (WLS),therapy10,1061,0.1553,-0.3779,0.6886,0.5611
+FUNC,without rural % and dual %,therapy10,1061,-0.1009,-0.6003,0.3986,0.6868
+SELF,"as planned (v1.2): complete cases, no fill",therapy10,538,-0.2001,-0.9474,0.5472,0.5927
+SELF,weighted by measure denominator (WLS),therapy10,1061,0.0351,-0.4906,0.5608,0.8938
+SELF,without rural % and dual %,therapy10,1061,-0.2158,-0.6781,0.2465,0.3529
+MOB,"as planned (v1.2): complete cases, no fill",therapy10,538,-0.0204,-0.7047,0.6639,0.9525
+MOB,weighted by measure denominator (WLS),therapy10,1061,-0.0418,-0.5386,0.455,0.8665
+MOB,without rural % and dual %,therapy10,1061,-0.1318,-0.6456,0.382,0.6088
