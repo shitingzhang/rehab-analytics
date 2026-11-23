@@ -1,6 +1,8 @@
 # Therapy mode and discipline mix in U.S. inpatient rehabilitation
 
-How do facilities that deliver more therapy in groups compare on community discharge, readmission and Medicare payment? This study links four public CMS files covering 1,165 inpatient rehabilitation facilities. Among the 938 facilities with a usable case-mix profile, a higher share of group/concurrent therapy minutes was associated with both higher community discharge and higher readmission.
+How do facilities that deliver more therapy in groups compare on community discharge, readmission and Medicare payment? This study links four public CMS files covering 1,165 inpatient rehabilitation facilities. **The current main analysis uses 938 facilities** with a usable case-mix profile. A higher share of group/concurrent therapy minutes was associated with both higher community discharge and higher readmission.
+
+To reproduce the main analysis, run `01 → 02 → 12`. [Main analysis code](src/12_mode_mix_analysis.py) · [Run commands](#reproduce-the-analysis)
 
 ![Adjusted associations of four therapy shares with community discharge, readmission and Medicare payment](reports/figures/model_a_forest.png)
 
@@ -38,11 +40,7 @@ Because community discharge and readmission are reported separately at the facil
 
 ## Reproduce the analysis
 
-- **Current study (938 facilities).** Run `01` to clean and link the CMS files, `02` to build the database, then `12` to fit the therapy composition models.
-- **Historical dose and screening analyses.** After `02`, run `04` and `05` with `--as-planned` for the original specification and again without the flag for the revised specification. The local script `06_compare_versions.py` compares the two sets of results and is planned for a later release.
-- **Historical discharge function.** Run `09` after `02` to reproduce the exploratory estimates for discharge function, self-care and mobility. [Results and forest plot](docs/function_outcomes.md)
-
-Place the [four CMS source files](docs/study_design.md#source-files) in `data/raw/`. From the repository root run:
+For the current 938-facility analysis, place the [four CMS source files](docs/study_design.md#source-files) in `data/raw/`. Run these commands from the repository root.
 
 ```sh
 python -m pip install -r requirements.txt
@@ -53,7 +51,13 @@ python src/model_a_diagnostics.py
 python -m unittest discover -s tests
 ```
 
-The primary results are written to `data/processed/mode_mix_post_audit/` and figures to `reports/figures/`. Each linked sensitivity report includes its command. The [earlier dose analysis](data/processed/analysis/dose_primary_holm.csv) remains available for comparison.
+The primary results are written to `data/processed/mode_mix_post_audit/` and figures to `reports/figures/`. Each linked sensitivity report includes its command.
+
+## Historical analyses
+
+- **Dose and screening (`04` and `05`).** After `02`, run `04` and `05` with `--as-planned` for the original specification and again without the flag for the revised specification. [Earlier dose results](data/processed/analysis/dose_primary_holm.csv)
+- **Version comparison (`06`, desktop only).** `06_compare_versions.py` compares the original and revised outputs from `04` and `05`.
+- **Discharge function (`09`, 1,061 facilities per outcome).** This exploratory analysis uses the historical v1.3 model. Run `python src/09_function_outcomes.py` after `02`. [Results and forest plot](docs/function_outcomes.md)
 
 ## Acknowledgments
 

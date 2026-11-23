@@ -1,6 +1,6 @@
 # Historical therapy ratio and discharge function
 
-This exploratory analysis was added after the earlier dose results were known. It compares the share of patients meeting or exceeding their expected discharge score for function, self-care and mobility across 1,061 facilities.
+Step `09` is a supplementary analysis using the historical v1.3 model. It was added after the earlier dose results were known. It compares the share of patients meeting or exceeding their expected discharge score for function, self-care and mobility, with 1,061 facilities in each analysis.
 
 ![Forest plot of adjusted differences and 95% confidence intervals for three discharge function measures](../reports/figures/historical_function_outcomes.png)
 
